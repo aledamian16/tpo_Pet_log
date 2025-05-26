@@ -292,7 +292,7 @@ def busquedaDeId(datosUsuarios):
         ingreseIdIndividuo =int(input("ingresar ID correctamente : "))#ingresar id de la mascota a editar
         while not str(ingreseIdIndividuo).isnumeric():
             ingreseIdIndividuo= input("Ingrese el ID correctamente:")#en caso de no ser caracter numerico vuelve a solicitarlo
-            #Utilizamos un booleano para corroborar que el dueño exista
+            #Utilizamos un booleano para corroborar que el individuo exista
         for usuario in datosUsuarios:
             if  ingreseIdIndividuo == usuario['id']:
                 individuoEncontrado=True
@@ -318,9 +318,11 @@ def cambioDeId(individuo, datosUsuarios):
 
 def cambioNombre(individuo):
     nuevoNombre = input("ingresar nombre: ")
-    while not nuevoNombre.isalpha(): # en caso de tener caracter numerico vuelve solicitar el nombre
+    nombreSinEspacios=nuevoNombre.remplace(" ","") 
+    while not nombreSinEspacios.isalpha(): # en caso de tener caracter numerico vuelve solicitar el nombre
         print("Nombre inválido: solo letras")
         nuevoNombre = input("ingresar nombre valido: ")
+        nombreSinEspacios=nuevoNombre.remplace(" ","")
     individuo["nombre"] = nuevoNombre.title()
     return individuo
 
@@ -328,10 +330,7 @@ def cambioNombre(individuo):
 
 # se podria usar lambda
 def muestraDatosMascota(mascota):
-    nombresDuenios = []  # En esta lista vacía vamos a ir guardando los nombres de los dueños de la mascota consultada
-    for duenio in duenios:  # Por cada mascota que recorremos , recorremos todos los dueños de la lista de diccionarios "duenios"
-        if duenio["id"] in mascota["dueños"]:  #Si el id de ese dueño está vinculado a la mascota procederemos a agregarlo a la lista "nombresDuenios"
-            nombresDuenios.append(duenio["nombre"])
+    nombresDuenios = [duenio["nombre"] for duenio in duenios if duenio["id"] in mascota["dueños"]]
 
     print(f"ID: {mascota['id']}")
     print(f"Nombre: {mascota['nombre']}")
@@ -343,11 +342,8 @@ def muestraDatosMascota(mascota):
 
 # ae podria usar lambda
 def muestraDatosDuenios(duenio):
-        mascotasDuenio = [] # En esta lista vacía vamos a ir guardando los nombres de los dueños de la mascota consultada
-        for mascota in mascotas: # Por cada dueño que recorremos , recorremos todas los mascotas de la lista de diccionarios "mascotas"
-            if duenio["id"] in mascota["dueños"]: #Si el id de ese dueño está vinculado a la mascota procedemos a agregar la mascota a agregarlo a la lista "mascotasDuenio"
-                mascotasDuenio.append(mascota["nombre"])
-
+        mascotasDuenio = [mascota["nombre"] for mascota in mascotas if duenio["id"] in mascota["dueños"]]
+        
         print("--- Persona ---")
         print(f"ID: {duenio['id']}")
         print(f"Nombre: {duenio['nombre']}")
@@ -684,10 +680,11 @@ def mostrarUltimasDiezVisitas(mascotas):
 def crearUsuario():
     try:
         usuario=input("Ingresar nombre de usuario: ")
-        usuario.replace(" ","")
-        while not usuario.isalpha(): # en caso de tener caracter numerico vuelve solicitar el nombre
+        usuarioSinEspacios=usuario.replace(" ","")
+        while not usuarioSinEspacios.isalpha(): # en caso de tener caracter numerico vuelve solicitar el nombre
             print("Nombre inválido: solo letras")
             usuario=input("Ingresar Usuario correctamente: ")
+            usuarioSinEspacios=usuario.replace(" ","")
         
         contrasenia=input("Ingresar contrasenia: ")
         while contrasenia.length() <8 and contrasenia.length() >10 and not contrasenia.isalnum():
@@ -695,7 +692,7 @@ def crearUsuario():
         usuario.title()
 
         sesion=(usuario,contrasenia)
-
+        flag=False
         while flag!=True:
             if sesion not in usuariosRegistrados:
                 usuariosRegistrados.append(sesion)
