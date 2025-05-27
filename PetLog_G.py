@@ -306,11 +306,9 @@ def cambioDeId(individuo, datosUsuarios):
         nuevoId=int(input("seleccione nuevo ID: "))
         while not str(nuevoId).isnumeric():
             nuevoId= int(input("Ingrese el ID correctamente:"))
-        listaIdUsuarios=[]
-        for usuario in datosUsuarios:
-            listaIdUsuarios.append( usuario["id"])
+        setIdUsuarios=set(map(lambda x:x["id"],datosUsuarios))
 
-        if nuevoId not in listaIdUsuarios:
+        if nuevoId not in setIdUsuarios:
             individuo["id"] = nuevoId
             flag = True
             return individuo
