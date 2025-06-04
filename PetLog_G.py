@@ -1,58 +1,89 @@
+import re
 from datetime import datetime
+
+"""
+--------------------------------------------------------------------------------------------------------
+  Funciones auxiliares y validación
+--------------------------------------------------------------------------------------------------------
+"""
+def input_id_valido(identificador):
+    while True:
+        try:
+            entrada = identificador.strip()
+            if not entrada.isdigit():
+                raise ValueError("Debe ingresar un número.")
+            return int(entrada)
+        except ValueError as e:
+            print(f"Error: {e}")
+
+def buscar_por_id(lista, id_busqueda):
+    for item in lista:
+        if item["id"] == id_busqueda:
+            return item
+    return None
+
+def input_texto_obligatorio(mensaje):
+    while True:
+        texto = input(mensaje).strip()
+        if texto:
+            return texto
+        print("Este campo no puede estar vacío.")
+
 """
 --------------------------------------------------------------------------------------------------------
   Funciones para Eliminar Mascotas y/o Dueñxs
 --------------------------------------------------------------------------------------------------------
 """
-def eliminar_duenio_o_mascota(duenios, mascotas):
+def menu_eliminar(duenios, mascotas):
     print("""¿Qué desea eliminar?
     1: Mascota
     2: Dueñx""")
     opcion = input("Ingrese el número de la opción: ").strip()
 
     if opcion == "1":
-        id_mascota = input("Ingrese el ID de la mascota a eliminar: ").strip()
-        while not id_mascota.isdigit():
-            id_mascota = input("ID inválido. Ingrese un número: ").strip()
-        id_mascota = int(id_mascota)
-        eliminar_mascota(mascotas, id_mascota)
+        id_mascota = input("Ingrese el ID de la mascota a eliminar: ")
+        id_mascota = input_id_valido(id_mascota)
+        eliminar_mascota_por_id(mascotas, id_mascota)
 
     elif opcion == "2":
-        id_duenio = input("Ingrese el ID del dueñx a eliminar: ").strip()
-        while not id_duenio.isdigit():
-            id_duenio = input("ID inválido. Ingrese un número: ").strip()
-        id_duenio = int(id_duenio)
-        eliminar_duenio(duenios, mascotas,id_duenio)
-
+        id_duenio = input("Ingrese el ID del dueñx a eliminar: ")
+        id_duenio = input_id_valido(id_duenio)
+        if eliminar_duenio_por_id(duenios, id_duenio):
+            actualizar_mascotas_por_duenio_eliminado(mascotas, id_duenio, duenios)
     else:
         print("Opción inválida. No se realizó ninguna acción.")
 
-def eliminar_mascota(mascotas, id_mascota):
-    for mascota in mascotas:
-        if mascota['id'] == id_mascota:
+def eliminar_mascota_por_id(mascotas, id_mascota):
+    try:
+        mascota = buscar_por_id(mascotas, id_mascota)
+        if mascota:
             mascotas.remove(mascota)
-            print(f"Mascota con ID {id_mascota} eliminada exitosamente.")
-            return
-    print(f"No se encontró una mascota con ID {id_mascota}.")
-def eliminar_duenio(duenios, mascotas, id_duenio):
-    for duenio in duenios:
-        if duenio['id'] == id_duenio:
-            duenios.remove(duenio)
-            print(f"Dueñx con ID {id_duenio} eliminado exitosamente.")
-            break
+            print(f"La mascota {mascota['nombre']} con ID {id_mascota} ha sido eliminada exitosamente.")
+        else:
+            print(f"No se encontró una mascota con ID {id_mascota}.")
+    except Exception as e:
+        print(f"Error al eliminar la mascota: {e}")
+
+def eliminar_duenio_por_id(duenios, id_duenio):
+    duenio = buscar_por_id(duenios, id_duenio)
+    if duenio:
+        duenios.remove(duenio)
+        print(f"Dueñx {duenio['nombre']} con ID {id_duenio} ha sido eliminado exitosamente.")
+        return True
     else:
         print(f"No se encontró un dueñx con ID {id_duenio}.")
-        return
-    
+        return False
+
+def actualizar_mascotas_por_duenio_eliminado(mascotas, id_duenio, duenios):
     for mascota in mascotas:
-        if id_duenio in mascota['dueños']:
-            mascota['dueños'].remove(id_duenio)
+        if id_duenio in mascota["dueños"]:
+            mascota["dueños"].remove(id_duenio)
             print(f"Se quitó el dueñx {id_duenio} de la mascota '{mascota['nombre']}'.")
 
-            if not mascota['dueños']:      # Si la mascota se quedó sin dueños
+            if not mascota["dueños"]:
                 print(f"La mascota '{mascota['nombre']}' se quedó sin dueñx.")
-                nuevo_duenio = agregarDuenio(duenios)  
-                mascota['dueños'].append(nuevo_duenio['id'])
+                nuevo_duenio = agregarDuenio(duenios, mascotas)
+                mascota["dueños"].append(nuevo_duenio["id"])
                 print(f"Se asignó un nuevo dueñx a '{mascota['nombre']}'.")
 
 """
@@ -60,42 +91,27 @@ def eliminar_duenio(duenios, mascotas, id_duenio):
   Funciones para añadir visita médica
 --------------------------------------------------------------------------------------------------------
 """
-def registrarVisita(mascotas):
-    #Solicitamos al usuario que ingrese el ID de la mascota
-    mascota_id = input("Ingrese el ID de la mascota: ").strip()
-    while not mascota_id.isdigit():
-        print("El ID ingresado no es un ID váido")
-        mascota_id = input("Ingrese el ID de la mascota: ").strip()
-
-    #Una vez verificamos que lo ingresado es un dígito lo convertimos a entero
-    mascota_id = int(mascota_id)
-
-    #Registramos la nueva visita médica
-    for mascota in mascotas:
-        if mascota["id"] == mascota_id:
-            visita = []
-            fecha_actual = datetime.now().strftime("%d/%m/%Y")# Fecha automática
-
-            motivo = input("Ingrese el motivo de la consulta: ").strip().lower()
-            while not motivo:
-                print("El motivo ingresado no es válido")
-                motivo = input("Ingrese el motivo de la consulta: ").strip().lower()
-
-            diagnostico = input("Ingrese el diagnóstico: ").strip()
-            while not diagnostico:
-                print("El diagnóstico no puede estar vacío.")
-                diagnostico = input("Ingrese el diagnóstico: ").strip()
-
-            tratamiento = input("Ingrese el tratamiento indicado: ").strip()
-            while not tratamiento:
-                print("El tratamiento no puede estar vacío.")
-                tratamiento = input("Ingrese el tratamiento indicado: ").strip()
-
-            visita = [fecha_actual, motivo, diagnostico, tratamiento]
-            mascota['historial'].append(visita)
+def registrar_visita(mascotas):
+    try:
+        id_mascota = input("Ingrese el ID de la mascota: ")
+        id_mascota = input_id_valido(id_mascota)
+        mascota = buscar_por_id(mascotas, id_mascota)
+        if mascota:
+            visita = crear_visita()
+            mascota["historial"].append(visita)
             print(f"Visita registrada exitosamente para {mascota['nombre'].capitalize()}.")
-            return
+        else:
+            print("No se encontró una mascota con ese ID.")
+    except Exception as e:
+        print(f"Ocurrió un error al registrar la visita: {e}")
 
+def crear_visita():
+    fecha = datetime.now().strftime("%d/%m/%Y")
+    motivo = input_texto_obligatorio("Ingrese el motivo de la consulta: ").lower()
+    diagnostico = input_texto_obligatorio("Ingrese el diagnóstico: ")
+    tratamiento = input_texto_obligatorio("Ingrese el tratamiento indicado: ")
+    return [fecha, motivo, diagnostico, tratamiento]
+            
 """
 --------------------------------------------------------------------------------------------------------
   Funciones para agregar Mascotas y/o Dueñxs
@@ -847,11 +863,11 @@ while opcion != 0:
 
     elif opcion == 4:
         print("Ha seleccionado Eliminar Mascota y/o Dueñx")
-        eliminar_duenio_o_mascota(duenios,mascotas)
+        menu_eliminar(duenios,mascotas)
     
     elif opcion == 5:
         print("Ha seleccionado registrar una nueva visita médica") 
-        registrarVisita(mascotas)
+        registrar_visita(mascotas)
     else:
         print("No ingreso una opción válida. Por favor volver a ingresar una opción del listado.")
 
