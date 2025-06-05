@@ -4,6 +4,66 @@ from datetime import datetime
 
 """
 --------------------------------------------------------------------------------------------------------
+  Datos Globales
+--------------------------------------------------------------------------------------------------------
+"""
+
+#Tupla con los tipos de mascotas
+tiposMascotas = ("Perro" , "Gato", "Ave", "Reptil", "Roedor", "Pez", "Otro")
+
+#Lista de mascotas
+mascotas = [
+    {
+        "id": 1,
+        "nombre": "Parda",
+        "tipo": "Perro",
+        "edad": 5,
+        "dueños": [1, 2],  # Referencia a ID de dueños
+        "historial": [["12/04/2001" , "Vacuna" ,"Recibida", "La mascota fue vacunada con una antirabica"] ,["12/05/2012" , "Control" ,"Recibida", "Control de mascota, peso 15kg"]]
+    },
+    {
+        "id": 2,
+        "nombre": "Sasha",
+        "tipo": "Gato",
+        "edad": 7,
+        "dueños": [3],
+        "historial": [["12/04/2001" , "Vacuna","Recibida" , "La mascota fue vacunada con una antirabica"] ,["12/05/2012" , "Control" ,"Recibida", "Control de mascota, peso 15kg"]]
+    },
+    {
+        "id": 3,
+        "nombre": "Bulma",
+        "tipo": "Perro",
+        "edad": 12,
+        "dueños": [2],
+        "historial": [["12/04/2001" , "Vacuna" , "Recibida" ,"La mascota fue vacunada con una antirabica"] ,["13/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["14/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["15/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["16/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["17/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["18/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["19/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["20/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["21/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["22/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["23/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["24/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["25/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["26/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],]
+    }
+    ]
+
+#Lista de dueños
+duenios = [
+    {
+        "id": 1,  #ID del dueño
+        "nombre": "Jorge Rodriguez",
+        "telefono": "5490862451",
+        "mail": "pepe@gmail.com"
+    },
+    {
+        "id": 2,
+        "nombre": "Bautista Rojas",
+        "telefono": "1146376425",
+        "mail": "laurojas@uade.edu.ar"
+    },
+    {
+        "id": 3,
+        "nombre": "Maria Eugenia Cobas",
+        "telefono": "1556788892",
+        "mail": "mecobas@hotmail.com"
+    }
+
+]
+
+"""
+--------------------------------------------------------------------------------------------------------
   Funciones auxiliares y validación
 --------------------------------------------------------------------------------------------------------
 """
@@ -639,10 +699,11 @@ def mostrarUltimasDiezVisitas(mascotas):
 MENU - PROGRAMA PRINCIPAL
 --------------------------------------------------------------------------------------------------------
 """
-'''
-#Print del Menú
-print("¡Bienvenido!\n")
-print("""--- Seleccione una opción: ---\n
+def menuPrincipal(mascotas, duenios, tiposMascotas, usuario):
+    salir = False
+    while not salir:
+        print("\n=== Menú Principal ===")
+        print("""--- Seleccione una opción: ---\n
   1: Consultar Mascota y/o Dueñx\n
   2: Modificar Mascota y/o Dueñx\n
   3: Agregar Mascota y/o Dueñx\n
@@ -650,99 +711,31 @@ print("""--- Seleccione una opción: ---\n
   5: Registrar nueva visita médica\n
   0: Finalizar Sesión""")
 
-opcion = int(input("\nOpción: "))
+        try:
+            opcion = int(input("Seleccione una opción: "))
+            if opcion == 1:
+                print("Ha seleccionado Consultar Mascota y/o Dueñx")
+                consultarInformacion(mascotas, duenios)
+            elif opcion == 2:
+                print("Ha seleccionado Modificar Mascota y/o Dueñx")
+                modificarInformacion(mascotas, duenios)
+            elif opcion == 3:
+                print("Ha seleccionado Agregar Nueva Mascota y/o Dueñx")
+                agregarMascotaODuenio(mascotas, duenios, tiposMascotas)
+            elif opcion == 4:
+                print("Ha seleccionado Eliminar Mascota y/o Dueñx")
+                menu_eliminar(duenios, mascotas)
+            elif opcion == 5:
+                print("Ha seleccionado Registrar nueva visita médica")
+                registrar_visita(mascotas)
+            elif opcion == 0:
+                print("Sesión Finalizada.")
+                salir = True
+            else:
+                print("Opción inválida. Intente nuevamente.")
+        except ValueError:
+            print("Error - Debe ingresar una opción válida (1 , 2, 3, 4, 5 o 0).")
 
-
-#Tupla con los tipos de mascotas
-tiposMascotas = ("Perro" , "Gato", "Ave", "Reptil", "Roedor", "Otro")
-
-#Lista de mascotas
-mascotas = [
-    {
-        "id": 1,
-        "nombre": "parda",
-        "tipo": "Perro",
-        "edad": 5,
-        "dueños": [1, 2],  # Referencia a ID de dueños
-        "historial": [["12/04/2001" , "Vacuna" ,"Recibida", "La mascota fue vacunada con una antirabica"] ,["12/05/2012" , "Control" ,"Recibida", "Control de mascota, peso 15kg"]]
-    },
-    {
-        "id": 2,
-        "nombre": "sasha",
-        "tipo": "Gato",
-        "edad": 7,
-        "dueños": [3],
-        "historial": [["12/04/2001" , "Vacuna","Recibida" , "La mascota fue vacunada con una antirabica"] ,["12/05/2012" , "Control" ,"Recibida", "Control de mascota, peso 15kg"]]
-    },
-    {
-        "id": 3,
-        "nombre": "bulma",
-        "tipo": "Perro",
-        "edad": 12,
-        "dueños": [2],
-        "historial": [["12/04/2001" , "Vacuna" , "Recibida" ,"La mascota fue vacunada con una antirabica"] ,["13/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["14/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["15/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["16/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["17/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["18/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["19/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["20/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["21/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["22/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["23/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["24/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["25/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],["26/05/2012" , "Control" ,"Recibida" , "Control de mascota, peso 15kg"],]
-    }
-    ]
-
-#Lista de dueños
-duenios = [
-    {
-        "id": 1,  #ID del dueño
-        "nombre": "jorge rodriguez",
-        "telefono": "5490862451",
-        "mail": "pepe@gmail.com"
-    },
-    {
-        "id": 2,
-        "nombre": "bautista rojas",
-        "telefono": "1146376425",
-        "mail": "laurojas@uade.edu.ar"
-    },
-    {
-        "id": 3,
-        "nombre": "maria eugenia cobas",
-        "telefono": "1556788892",
-        "mail": "mecobas@hotmail.com"
-    }
-
-]
-
-
-#Bucle para selección de Opción y terminación de sesión
-while opcion != 0:
-    if opcion == 1:
-        print("Ha seleccionado Consultar Mascota y/o Dueñx")
-        consultarInformacion(mascotas, duenios)
-        
-    elif opcion == 2:
-        print("Ha seleccionado Modificar Mascota y/o Dueñx")
-        modificarInformacion(mascotas, duenios)
-    elif opcion == 3:
-        print("Ha seleccionado Agregar Nueva Mascota y/o Dueñx")
-        agregarMascotaODuenio(mascotas, duenios, tiposMascotas)
-
-    elif opcion == 4:
-        print("Ha seleccionado Eliminar Mascota y/o Dueñx")
-        menu_eliminar(duenios,mascotas)
-    
-    elif opcion == 5:
-        print("Ha seleccionado registrar una nueva visita médica") 
-        registrar_visita(mascotas)
-    else:
-        print("No ingreso una opción válida. Por favor volver a ingresar una opción del listado.")
-
-    print("""\n--- Seleccione una opción: ---\n
-        1: Consultar Mascota y/o Dueñx\n
-        2: Modificar Mascota y/o Dueñx\n
-        3: Agregar Mascota y/o Dueñx\n
-        4: Eliminar Mascota y/o Dueñx\n
-        5: Registrar nueva visita médica\n
-        0: Finalizar Sesión""")
-
-    opcion = int(input("Opción: "))
-print("\nSesión Finalizada")
-
-'''
 """
 --------------------------------------------------------------------------------------------------------
   Menú y Funciones de Log In y Sign Up
@@ -812,7 +805,7 @@ def crear_usuario(usuarios, ruta_usuarios):
     
     usuarios[usuario] = contrasenia
     guardar_nuevo_usuario(usuario, contrasenia, ruta_usuarios)
-    print(f"¡Usuario '{usuario}' registrado correctamente!")
+    print(f"¡Usuario '{usuario}' registrado correctamente!\n")
 
 def inicio_sesion(usuarios):
     print("\n--- Inicio de sesión (Ingrese 0 para volver al menú) ---")
@@ -846,7 +839,7 @@ def menu_inicio(ruta_usuarios):
             opcion = int(input("Seleccione una opción: "))
             if opcion == 1:
                 if inicio_sesion(usuariosRegistrados):
-                    return True
+                    menu_principal(mascotas, duenios, tiposMascotas)
             elif opcion == 2:
                 crear_usuario(usuariosRegistrados,ruta_usuarios)
                 usuariosRegistrados = cargar_usuarios(ruta_usuarios)  #recargar usuarios después de registrar

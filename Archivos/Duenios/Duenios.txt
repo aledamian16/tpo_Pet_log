@@ -1,0 +1,21 @@
+[
+    {
+        "id": 1,  #ID del dueño
+        "nombre": "jorge rodriguez",
+        "telefono": "5490862451",
+        "mail": "pepe@gmail.com"
+    },
+    {
+        "id": 2,
+        "nombre": "bautista rojas",
+        "telefono": "1146376425",
+        "mail": "laurojas@uade.edu.ar"
+    },
+    {
+        "id": 3,
+        "nombre": "maria eugenia cobas",
+        "telefono": "1556788892",
+        "mail": "mecobas@hotmail.com"
+    }
+
+]
