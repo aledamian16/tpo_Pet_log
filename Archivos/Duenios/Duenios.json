@@ -1,6 +1,6 @@
 [
     {
-        "id": 1,  #ID del dueño
+        "id": 1,
         "nombre": "jorge rodriguez",
         "telefono": "5490862451",
         "mail": "pepe@gmail.com"
