@@ -519,8 +519,12 @@ def editarDatosDuenio(duenios):
             muestraDatosDuenios(duenio)
             return False
 
-        
-
+"""
+--------------------------------------------------------------------------------------------------------
+  Funciones Log Auditoría
+--------------------------------------------------------------------------------------------------------
+"""      
+#Acá irían las funciones para que quede un registro de lo que realizan los usuarios, debería quedar guardado en el archivo de logAuditoria
 """
 --------------------------------------------------------------------------------------------------------
   Funciones de Consulta
