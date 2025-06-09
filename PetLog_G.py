@@ -13,7 +13,8 @@ ruta_usuarios = "Archivos/Usuarios/usuariosRegistrados.txt"
 ruta_mascotas = "Archivos/Mascotas/Mascotas.json"
 # Ruta del archivo con los dueños
 ruta_duenios = "Archivos/Duenios/Duenios.json"
-
+# Ruta del archivo con el log de auditoria
+ruta_log_auditoria = "Archivos/Log/LogAuditoria.txt"
 """
 --------------------------------------------------------------------------------------------------------
     Funciones para cargar y guardar los archivos JSON
@@ -124,10 +125,28 @@ def input_tipo_mascota(mensaje, tipos):
 
 """
 --------------------------------------------------------------------------------------------------------
+  Funciones Log Auditoría
+--------------------------------------------------------------------------------------------------------
+"""      
+#Acá irían las funciones para que quede un registro de lo que realizan los usuarios, debería quedar guardado en el archivo de logAuditoria
+def registrar_log_auditoria(usuario, accion):
+    """
+    Registra una línea de auditoría en el archivo LogAuditoria.txt con:
+    Fecha,hora, usuario y acción realizada.
+    """
+    try:
+        with open(ruta_log_auditoria, "a", encoding="utf-8") as log:
+            fechaYhora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            log.write(f"{fechaYhora} - {usuario}: {accion}\n")
+    except Exception as e:
+        print(f"Error al registrar en el log de auditoría: {e}")
+
+"""
+--------------------------------------------------------------------------------------------------------
   Funciones para Eliminar Mascotas y/o Dueñxs
 --------------------------------------------------------------------------------------------------------
 """
-def menu_eliminar(duenios, mascotas):
+def menu_eliminar(duenios, mascotas,usuario_logueado):
     print("""¿Qué desea eliminar?
     1: Mascota
     2: Dueñx""")
@@ -228,7 +247,7 @@ def crear_visita(usuario_logueado):
   Funciones para agregar Mascotas y/o Dueñxs
 --------------------------------------------------------------------------------------------------------
 """
-def menu_agregar(mascotas, duenios, tipos_mascotas):
+def menu_agregar(mascotas, duenios, tipos_mascotas,usuario_logueado):
     while True:
         print("""\n--- Menú Agregar ---
                 1: Agregar dueñx
@@ -237,11 +256,11 @@ def menu_agregar(mascotas, duenios, tipos_mascotas):
         opcion = input("Seleccione una opción: ").strip()
 
         if opcion == "1":
-            agregar_duenio(duenios, mascotas)
+            agregar_duenio(duenios, mascotas,usuario_logueado)
             guardar_datos_json(ruta_duenios, duenios)
             guardar_datos_json(ruta_mascotas, mascotas)
         elif opcion == "2":
-            agregar_mascota(mascotas, duenios, tipos_mascotas)
+            agregar_mascota(mascotas, duenios, tipos_mascotas,usuario_logueado)
             guardar_datos_json(ruta_duenios, duenios)
             guardar_datos_json(ruta_mascotas, mascotas)
         elif opcion == "3":
@@ -257,7 +276,7 @@ def generar_id(lista):
         #Recorremos la lista para buscar el id más alto y le sumamos 1
         return max(item["id"] for item in lista) + 1
     
-def agregar_duenio(duenios, mascotas):
+def agregar_duenio(duenios, mascotas,usuario_logueado):
     nuevo_id = generar_id(duenios)
 
     nombre = input_nombre_valido("Nombre del dueñx: ").title()
@@ -273,7 +292,7 @@ def agregar_duenio(duenios, mascotas):
     }
     duenios.append(duenio)
     print(f"Dueñx '{nombre}' agregado con ID {nuevo_id}.\n")
-
+    registrar_log_auditoria(usuario_logueado, f"Agregó un nuevo dueñx: {nombre} - ID: {nuevo_id}")
     # Asociar a mascota
     if mascotas:
         opcion = input("¿Desea asociar este nuevo dueñx a una mascota? (1: Sí, 2: No): ").strip()
@@ -282,7 +301,7 @@ def agregar_duenio(duenios, mascotas):
 
     return duenio
 
-def agregar_mascota(mascotas, duenios, tipos_mascotas):
+def agregar_mascota(mascotas, duenios, tipos_mascotas,usuario_logueado):
     nuevo_id = generar_id(mascotas)
 
     nombre = input_texto_obligatorio("Nombre de la mascota: ").title()
@@ -299,7 +318,8 @@ def agregar_mascota(mascotas, duenios, tipos_mascotas):
     }
     mascotas.append(mascota)
     print(f"Mascota '{nombre}' agregada con ID {nuevo_id}.")
-
+    registrar_log_auditoria(usuario_logueado, f"Agregó una nueva mascota: {nombre} - ID: {nuevo_id}")
+    
     # Asociar a dueñx
     if duenios:
         opcion = input("¿Desea asociar esta mascota a un dueñx existente? (1: Sí, 2: No): ").strip()
@@ -530,12 +550,7 @@ def editarDatosDuenio(duenios):
             muestraDatosDuenios(duenio)
             return False
 
-"""
---------------------------------------------------------------------------------------------------------
-  Funciones Log Auditoría
---------------------------------------------------------------------------------------------------------
-"""      
-#Acá irían las funciones para que quede un registro de lo que realizan los usuarios, debería quedar guardado en el archivo de logAuditoria
+
 """
 --------------------------------------------------------------------------------------------------------
   Funciones de Consulta
@@ -877,13 +892,13 @@ def menuPrincipal(mascotas, duenios, tiposMascotas, usuario_logueado):
                 consultarInformacion(mascotas, duenios)
             elif opcion == 2:
                 print("Ha seleccionado Modificar Mascota y/o Dueñx")
-                modificarInformacion(mascotas, duenios)
+                modificarInformacion(mascotas, duenios, usuario_logueado)
             elif opcion == 3:
                 print("Ha seleccionado Agregar Nueva Mascota y/o Dueñx")
-                menu_agregar(mascotas, duenios, tiposMascotas)
+                menu_agregar(mascotas, duenios, tiposMascotas, usuario_logueado)
             elif opcion == 4:
                 print("Ha seleccionado Eliminar Mascota y/o Dueñx")
-                menu_eliminar(duenios, mascotas)
+                menu_eliminar(duenios, mascotas, usuario_logueado)
             elif opcion == 5:
                 print("Ha seleccionado Registrar nueva visita médica")
                 registrar_visita(mascotas,usuario_logueado)
