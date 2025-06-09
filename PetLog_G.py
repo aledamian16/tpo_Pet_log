@@ -64,7 +64,6 @@ def buscar_por_id(lista, id_busqueda):
 def mostrar_ids_mascotas(mascotas):
     """
     Imprime en pantalla cada mascota con su ID y nombre.
-    Útil para que el usuario identifique fácilmente qué ID corresponde a cada mascota.
     """
     if not mascotas:
         print("No hay mascotas registradas.")
@@ -74,6 +73,18 @@ def mostrar_ids_mascotas(mascotas):
     for mascota in mascotas:
         print(f"ID {mascota['id']}: {mascota['nombre'].capitalize()}")
     print("----------------------------")
+
+def mostrar_ids_duenios(duenios):
+    """
+    Imprime en pantalla cada dueñx con su ID y nombre.
+    """
+    if not duenios:
+        print("No hay dueñxs registrados.")
+        return
+    print("\n--- Dueñxs Registrados ---")
+    for d in duenios:
+        print(f"ID {d['id']}: {d['nombre']}")
+    print("--------------------------\n")
 
 def input_texto_obligatorio(mensaje):
     while True:
@@ -561,168 +572,158 @@ def consultarInformacion(mascotas, duenios):
 
 #Función mostrar todas las mascotas en la lista de mascotas
 def mostrarTodasLasMascotas(mascotas, duenios):
-
-    if not mascotas: #Verificamos si la lista de diccionarios está vacía (Devuelve falso si está vacía)
-        print("No hay mascotas registradas.") #En caso de que este vacía mostramos por pantalla que no hay mascotas registradas
+    """
+    Lista todas las mascotas con sus datos y dueñxs.
+    """
+    if not mascotas:
+        print("No hay mascotas registradas.")
         return
-    for mascota in mascotas: #Recorremos cada mascota en la lista de diccionarios "mascotas"
-        nombresDuenios = []  # En esta lista vacía vamos a ir guardando los nombres de los dueños de la mascota consultada
-
-        for duenio in duenios:  # Por cada mascota que recorremos , recorremos todos los dueños de la lista de diccionarios "duenios"
-            if duenio["id"] in mascota["dueños"]:  #Si el id de ese dueño está vinculado a la mascota procederemos a agregarlo a la lista "nombresDuenios"
-                nombresDuenios.append(duenio["nombre"])
-
-        print(f"ID: {mascota['id']}")
-        print(f"Nombre: {mascota['nombre']}")
-        print(f"Tipo: {mascota['tipo']}")
-        print(f"Edad: {mascota['edad']} años")
-        print(f"Dueñx/s: {' - '.join(nombresDuenios)}")
+    print("\n--- Lista de Todas las Mascotas ---")
+    for mascota in mascotas:
+        nombres_duenio = [duenio['nombre'] for duenio in duenios if duenio['id'] in mascota['dueños']]
+        print(f"ID: {mascotas['id']}")
+        print(f"Nombre: {mascotas['nombre']}")
+        print(f"Tipo: {mascotas['tipo']}")
+        print(f"Edad: {mascotas['edad']} años")
+        print(f"Dueñx/s: {' - '.join(nombres_duenio)}")
         print("----------------------------------")
 
 #Función para mostrar todos los dueños de la lista de diccionarios "duenios"
 def mostrarTodosLosDuenios(mascotas, duenios):
-    if not duenios: #Verificamos si la lista de diccionarios está vacía (Devuelve falso si está vacía)
-        print("No hay dueños registrados.") #En caso de que este vacía mostramos por pantalla que no hay dueños registrados
+    """
+    Lista todos los dueñxs con sus datos y mascotas asociadas.
+    """
+    if not duenios:
+        print("No hay dueñxs registrados.")
         return
-
-    for duenio in duenios: #Recorremos cada dueño en la lista de diccionarios "duenios"
-        mascotasDuenio = [] # En esta lista vacía vamos a ir guardando los nombres de los dueños de la mascota consultada
-        
-        for mascota in mascotas: # Por cada dueño que recorremos , recorremos todas los mascotas de la lista de diccionarios "mascotas"
-            if duenio["id"] in mascota["dueños"]: #Si el id de ese dueño está vinculado a la mascota procedemos a agregar la mascota a agregarlo a la lista "mascotasDuenio"
-                mascotasDuenio.append(mascota["nombre"])
-
-        print("--- Persona ---")
+    print("\n--- Lista de Todos los Dueñxs ---")
+    for duenio in duenios:
+        mascotas_duenio = [mascota['nombre'] for mascota in mascotas if duenio['id'] in mascota['dueños']]
         print(f"ID: {duenio['id']}")
         print(f"Nombre: {duenio['nombre']}")
-        print("--- Contacto ---")
         print(f"Teléfono: {duenio['telefono']}")
         print(f"Mail: {duenio['mail']}")
-        print("--- Mascotas ---")
-        print(f"Mascotas: {' - '.join(mascotasDuenio)}")
+        print(f"Mascotas: {' - '.join(mascotas_duenio)}")
         print("----------------------------------")
+
 
 #Función para buscar las mascotas por nombre (Devuelve todas las coincidencias con ese nombre)
 def buscarMascotaPorNombre(mascotas, duenios):
-    nombreMascota = input("Ingrese el nombre de la mascota a buscar: ").lower()
-    listaMascotaEncontrada = []  # Inicializamos una lista vacía para guardar las coincidencias de mascotas encontradas
-
-    for mascota in mascotas: #Recorremos todas las mascotas en la lista de diccionarios "mascotas"
-        if nombreMascota in mascota["nombre"].lower(): #Si el nombre ingresado conincide con alguno de la lista de diccionarios lo agregamos a "listaMascotaEncontrada"
-            listaMascotaEncontrada.append(mascota)
-
-    if not listaMascotaEncontrada: #Verificamos si la lista donde almacenamos las mascotas encontradas está vacía (Devuelve falso si está vacía)
+    """
+    Busca mascotas cuyo nombre contenga el criterio.
+    Muestra sus datos y todo el historial.
+    """
+    criterio = input_texto_obligatorio("Ingrese el nombre de la mascota a buscar: ").title()
+    mascotas_encontradas = [m for m in mascotas if criterio in m['nombre'].title()]
+    if not mascotas_encontradas:
         print("No se encontraron mascotas con ese nombre.")
-    else:
-        for mascota in listaMascotaEncontrada: #Recorremos todas las mascotas encontradas
-            nombresDuenios = []  # Lista para los nombres de los dueños
-            for duenio in duenios: #Recorremos todos los dueños de la lista de diccionarios "duenios"
-                if duenio["id"] in mascota["dueños"]: #Si el id de ese dueño está vinculado a la mascota procedemos a agregar al dueño a la lista de dueños de las mascotas encontradas
-                    nombresDuenios.append(duenio["nombre"])
-
-            # Mostramos los datos de la mascota
-            print("--- Mascota ---")
-            print(f"ID: {mascota['id']}")
-            print(f"Nombre: {mascota['nombre']}")
-            print(f"Tipo: {mascota['tipo']}")
-            print(f"Edad: {mascota['edad']} años")
-            print("Historial Médico:")
-            for fila in mascota['historial']:
-                print(" - ".join(fila))
-            print("--- Dueñx/s ---")
-            print(f"Dueñx/s: {' - '.join(nombresDuenios)}")
+        return
+    for mascota in mascotas_encontradas:
+        nombres_duenios = [duenio['nombre'] for duenio in duenios if duenio['id'] in mascota['dueños']]
+        print("\n--- Mascota ---")
+        print(f"ID: {mascota['id']}")
+        print(f"Nombre: {mascota['nombre']}")
+        print(f"Tipo: {mascota['tipo']}")
+        print(f"Edad: {mascota['edad']} años")
+        print("Historial Médico:")
+        for fila in mascota['historial']:
+            print(" - ".join(fila))
+        print(f"Dueñx/s: {' - '.join(nombres_duenios)}")
+        print("----------------------------------")
 
 #Función para buscar los dueños por nombre (Devuelve todas las coincidencias con ese nombre)
 def buscarDuenioPorNombre(mascotas, duenios):
-    nombreDuenio = input("Ingrese el nombre del dueñx a buscar: ").lower()
-    listaDueniosEncontrados = []
-
-     
-    for duenio in duenios: # Recorremos todos los dueños de la lista de diccionarios "duenios"
-        if nombreDuenio == duenio["nombre"].lower(): #Si el nombre ingresado conincide con alguno de la lista de diccionarios "duenios" lo agregamos a "listaDueniosEncontrados"
-            listaDueniosEncontrados.append(duenio)
-
-
-    if not listaDueniosEncontrados: #Verificamos si la lista donde almacenamos los dueños encontrados está vacía (Devuelve falso si está vacía)
+    """
+    Busca dueñx por nombre exacto.
+    Muestra sus datos y mascotas asociadas.
+    """
+    criterio = input_texto_obligatorio("Ingrese el nombre del dueñx a buscar: ").title()
+    duenios_encontrados = [duenio for duenio in duenios if criterio == duenio['nombre'].title()]
+    if not duenios_encontrados:
         print("No se encontraron dueñxs con ese nombre.")
-    else:
-        for duenio in listaDueniosEncontrados: #Recorremos todos los dueños encontrados
-            mascotasDelDuenio = [] #Lista para los nombres de las mascotas
-            for mascota in mascotas: #Recorremos todas lass mascotas de la lista de diccionarios "mascotas"
-                if duenio["id"] in mascota["dueños"]: #Si el id de ese dueño está vinculado a la mascota procedemos a agregar a la mascota a la lista de mascotas de los dueños encontrados
-                    mascotasDelDuenio.append(mascota["nombre"])
-            
-            # Mostramos los datos de la persona
-            print("--- Dueñx ---")
-            print(f"ID: {duenio['id']}")
-            print(f"Nombre: {duenio['nombre']}")
-            print(f"Teléfono: {duenio['telefono']}")
-            print("--- Mascota ---")
-            print(f"Mascotas: {' - '.join(mascotasDelDuenio)}")
+        return
+    for duenio in duenios_encontrados:
+        mascotas_duenio = [mascota['nombre'] for mascota in mascotas if duenio['id'] in mascota['dueños']]
+        print("\n--- Dueñx ---")
+        print(f"ID: {duenio['id']}")
+        print(f"Nombre: {duenio['nombre']}")
+        print(f"Teléfono: {duenio['telefono']}")
+        print(f"Mail: {duenio['mail']}")
+        print(f"Mascotas: {' - '.join(mascotas_duenio)}")
+        print("----------------------------------")
 
 def MenuHistorialMascota(mascotas):
+    """
+    Menú para ver historial completo o últimas 10 visitas.
+    """
     while True:
-        print("""\n--- Consultar Historial ---\n
-                1: Ver todo el historial de la mascota\n
-                2: Ver últimas 10 visitas a la veterinaria\n
-                3: Volver al menú principal""")
-
-
-        opcionHistorial = int(input("Seleccione una opción: "))
-
-        if opcionHistorial == 1:
+        print("""
+--- Consultar Historial ---
+1: Ver todo el historial de la mascota
+2: Ver últimas 10 visitas a la veterinaria
+3: Volver al menú principal
+""")
+        opcion = input_numero_entero("Seleccione una opción: ")
+        if opcion == 1:
             mostrarHistorialMascota(mascotas)
-        elif opcionHistorial == 2:
+        elif opcion == 2:
             mostrarUltimasDiezVisitas(mascotas)
-        elif opcionHistorial == 3:
+        elif opcion == 3:
             return
         else:
             print("Opción inválida. Intente nuevamente.")
 
+
 #Función para buscar el historial médico de la mascota
 def mostrarHistorialMascota(mascotas):
-    
-    if not mascotas: #Verificamos si la lista de diccionarios está vacía (Devuelve falso si está vacía)
-        print("No hay mascotas registradas.") #En caso de que este vacía mostramos por pantalla que no hay mascotas registradas
+    """
+    Muestra todo el historial de una mascota dada su ID.
+    0 muestra IDs disponibles.
+    """
+    if not mascotas:
+        print("No hay mascotas registradas.")
         return
-
-    #Solicitamos al usuario que ingrese el ID de masocta al que queremos buscar
-    mascota_id = input("Ingrese el ID de la mascota: ").strip()
-    while not mascota_id.isdigit():
-        print("El ID ingresado no es un ID váido")
-        mascota_id = input("Ingrese el ID de la mascota: ").strip()
-    
-    mascota_id = int(mascota_id)
-
-    print("\nHistorial Mascota: ")
-    for mascota in mascotas:
-        if mascota["id"] == mascota_id:
-            for fila in mascota['historial']:
-                print(" - ".join(fila))
+    while True:
+        id_input = input("Ingrese el ID de la mascota (0 para ver lista): ").strip()
+        id_mascota = input_id_valido(id_input)
+        if id_mascota == 0:
+            mostrar_ids_mascotas(mascotas)
+        else:
+            break
+    mascota = buscar_por_id(mascotas, id_mascota)
+    if mascota:
+        print(f"\nHistorial de {mascota['nombre']}:" )
+        for fila in id_mascota['historial']:
+            print(" - ".join(fila))
+        print()
+    else:
+        print("No se encontró la mascota.")
 
 #Función para buscar las últimas 10 visitas médicas de la mascota
 def mostrarUltimasDiezVisitas(mascotas):
-    if not mascotas: #Verificamos si la lista de diccionarios está vacía (Devuelve falso si está vacía)
-        print("No hay mascotas registradas.") #En caso de que este vacía mostramos por pantalla que no hay mascotas registradas
+    """
+    Muestra las últimas 10 visitas de una mascota dada su ID.
+    0 muestra IDs disponibles.
+    """
+    if not mascotas:
+        print("No hay mascotas registradas.")
         return
-
-    #Solicitamos al usuario que ingrese el ID de masocta al que queremos buscar
-    mascota_id = input("Ingrese el ID de la mascota: ").strip()
-    while not mascota_id.isdigit():
-        print("El ID ingresado no es un ID váido")
-        mascota_id = input("Ingrese el ID de la mascota: ").strip()
-
-    mascota_id = int(mascota_id)
-
-    print("\nHistorial Mascota: ")
-    for mascota in mascotas:
-        if mascota["id"] == mascota_id:
-            historial = mascota["historial"]
-
-            ultimasDiezVisitas = historial[-10:]
-            for fila in ultimasDiezVisitas:
-                print(" - ".join(fila))
-
+    while True:
+        id_input = input("Ingrese el ID de la mascota (0 para ver lista): ").strip()
+        id_mascota = input_id_valido(id_input)
+        if id_mascota == 0:
+            mostrar_ids_mascotas(mascotas)
+        else:
+            break
+    mascota = buscar_por_id(mascotas, id_mascota)
+    if mascota:
+        ult = mascota['historial'][-10:]
+        print(f"\nÚltimas 10 visitas de {mascota['nombre']}:" )
+        for fila in ult:
+            print(" - ".join(fila))
+        print()
+    else:
+        print("No se encontró la mascota.")
 
 """
 --------------------------------------------------------------------------------------------------------
@@ -806,10 +807,51 @@ def inicio_sesion(usuarios):
             return False
         
         if usuarios.get(usuario) == contrasenia:
-            print(f"¡Bienvenido, {usuario}!")
+            print(f"¡Bienvenidx {usuario}!")
             return usuario
         else:
             print("Usuario o contraseña incorrectos. Intente nuevamente.")
+
+
+def cambiar_contrasenia(usuariosRegistrados, ruta_usuarios):
+    pass
+ #En proceso todavía
+    '''
+    print("\n--- Cambio de contraseña (0 para cancelar) ---")
+    usuario = input("Usuario: ").strip()
+    if usuario == "0":
+        print("Operación cancelada.\n")
+        return
+    if usuario not in usuariosRegistrados:
+        print(f"El usuario '{usuario}' no existe.\n")
+        return
+
+    vieja = input("Contraseña antigua: ").strip()
+    if vieja == "0":
+        print("Operación cancelada.\n")
+        return
+    if usuariosRegistrados[usuario] != vieja:
+        print("Contraseña incorrecta.\n")
+        return
+
+    # Pedimos la nueva dos veces
+    nueva = input("Nueva contraseña (mínimo 8 caracteres alfanuméricos): ").strip()
+    if nueva == "0":
+        print("Operación cancelada.\n")
+        return
+    repetir = input("Reingrese la nueva contraseña: ").strip()
+    if nueva != repetir:
+        print("No coinciden. Intenta de nuevo.\n")
+        return
+    if len(nueva) < 8 or not nueva.isalnum():
+        print("La contraseña debe tener al menos 8 caracteres alfanuméricos.\n")
+        return
+
+    # Cambio efectivo y guardado
+    usuariosRegistrados[usuario] = nueva
+    guardar_todos_usuarios(usuariosRegistrados, ruta_usuarios)
+    print("Contraseña modificada exitosamente.\n")
+    '''
 
 """
 --------------------------------------------------------------------------------------------------------
@@ -826,7 +868,7 @@ def menuPrincipal(mascotas, duenios, tiposMascotas, usuario_logueado):
   3: Agregar Mascota y/o Dueñx\n
   4: Eliminar Mascota y/o Dueñx\n
   5: Registrar nueva visita médica\n
-  0: Finalizar Sesión""")
+  0: Finalizar Sesión\n""")
 
         try:
             opcion = int(input("Seleccione una opción: "))
@@ -863,6 +905,7 @@ def menu_inicio(ruta_usuarios):
     print("""--- ¡Bienvenido! ---\n
 1. Iniciar sesión\n
 2. Registrarse\n
+3. Cambiar contraseña\n
 0. Salir\n""")
 
     while True:
@@ -872,10 +915,11 @@ def menu_inicio(ruta_usuarios):
                 usuario_logueado = inicio_sesion(usuariosRegistrados)
                 if usuario_logueado:
                     menuPrincipal(mascotas, duenios, tiposMascotas, usuario_logueado)
-
             elif opcion == 2:
                 crear_usuario(usuariosRegistrados,ruta_usuarios)
                 usuariosRegistrados = cargar_usuarios(ruta_usuarios)  #recargar usuarios después de registrar
+            elif opcion == 3:
+                cambiar_contrasenia(usuariosRegistrados, ruta_usuarios)
             elif opcion == 0:
                 print("Sesión Finalizada.")
                 return False
