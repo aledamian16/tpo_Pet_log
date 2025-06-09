@@ -155,35 +155,37 @@ def menu_eliminar(duenios, mascotas,usuario_logueado):
     if opcion == "1":
         id_mascota = input("Ingrese el ID de la mascota a eliminar: ")
         id_mascota = input_id_valido(id_mascota)
-        eliminar_mascota_por_id(mascotas, id_mascota)
+        eliminar_mascota_por_id(mascotas, id_mascota, usuario_logueado)
         guardar_datos_json(ruta_mascotas, mascotas)
 
     elif opcion == "2":
         id_duenio = input("Ingrese el ID del dueñx a eliminar: ")
         id_duenio = input_id_valido(id_duenio)
-        if eliminar_duenio_por_id(duenios, id_duenio):
+        if eliminar_duenio_por_id(duenios, id_duenio, usuario_logueado):
             actualizar_mascotas_por_duenio_eliminado(mascotas, id_duenio, duenios)
             guardar_datos_json(ruta_duenios, duenios)
             guardar_datos_json(ruta_mascotas, mascotas)
     else:
         print("Opción inválida. No se realizó ninguna acción.")
 
-def eliminar_mascota_por_id(mascotas, id_mascota):
+def eliminar_mascota_por_id(mascotas, id_mascota, usuario_logueado):
     try:
         mascota = buscar_por_id(mascotas, id_mascota)
         if mascota:
             mascotas.remove(mascota)
             print(f"La mascota {mascota['nombre']} con ID {id_mascota} ha sido eliminada exitosamente.")
+            registrar_log_auditoria(usuario_logueado, f"Eliminó una mascota: {mascota['nombre']} - ID: {id_mascota}")
         else:
             print(f"No se encontró una mascota con ID {id_mascota}.")
     except Exception as e:
         print(f"Error al eliminar la mascota: {e}")
 
-def eliminar_duenio_por_id(duenios, id_duenio):
+def eliminar_duenio_por_id(duenios, id_duenio, usuario_logueado):
     duenio = buscar_por_id(duenios, id_duenio)
     if duenio:
         duenios.remove(duenio)
         print(f"Dueñx {duenio['nombre']} con ID {id_duenio} ha sido eliminado exitosamente.")
+        registrar_log_auditoria(usuario_logueado, f"Eliminó al dueño: {duenio['nombre']} - ID: {id_duenio}")
         return True
     else:
         print(f"No se encontró un dueñx con ID {id_duenio}.")
@@ -319,7 +321,7 @@ def agregar_mascota(mascotas, duenios, tipos_mascotas,usuario_logueado):
     mascotas.append(mascota)
     print(f"Mascota '{nombre}' agregada con ID {nuevo_id}.")
     registrar_log_auditoria(usuario_logueado, f"Agregó una nueva mascota: {nombre} - ID: {nuevo_id}")
-    
+
     # Asociar a dueñx
     if duenios:
         opcion = input("¿Desea asociar esta mascota a un dueñx existente? (1: Sí, 2: No): ").strip()
