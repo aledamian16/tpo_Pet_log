@@ -36,7 +36,7 @@ calendario = cargar_datos_json(ruta_calendario)
 # --------------------------------------------------------------------------------------------------------
 roles_validos = ("Gerente", "Recepcionista", "Veterinario")
 usuario_actual = None
-dias_validos = ("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo")
+dias_validos = ("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado")
 tiposMascotas = ("Perro" , "Gato", "Ave", "Reptil", "Roedor", "Pez", "Otro")
 # --------------------------------------------------------------------------------------------------------
 # Funciones de validación y normalización 
