@@ -118,21 +118,27 @@ def limpiar_texto(texto):
     texto_limpio = texto.strip().lower()
     texto_limpio = ''.join(c for c in unicodedata.normalize('NFD', texto_limpio) if unicodedata.category(c) != 'Mn')#normalize  á => a ´ , category limpia y solo deja las letras
     return texto_limpio.title()
-
+    
 def validar_rango_horario(rango, rangos_existentes):
-    patron = r"^([01]\d|2[0-3]):[0-5]\d-([01]\d|2[0-3]):[0-5]\d$" #expresiones regulares hora:minuto - hora:minuto
+    patron = r"^(0[8-9]|1[0-7]):[0-5]\d-(0[8-9]|1[0-7]|18):[0-5]\d$"
     if not re.match(patron, rango):
         return False
+
     formato = "%H:%M"
     inicio, fin = (datetime.strptime(h, formato) for h in rango.split("-"))
-    
+
+    # Validar que inicio < fin
     if inicio >= fin:
         return False
+
+    # Validar que no se superponga con rangos existentes
     for existente in rangos_existentes:
         ini_existente, fin_existente = (datetime.strptime(h, formato) for h in existente.split("-"))
         if inicio < fin_existente and fin > ini_existente:
             return False
+
     return True
+
 
 def ordenar_rangos(rangos):
     return sorted(rangos, key=lambda r: datetime.strptime(r.split("-")[0], "%H:%M"))
