@@ -1,20 +1,23 @@
 import re
 import json
 from datetime import datetime
+import unicodedata #normalizar texto
 
 """
 --------------------------------------------------------------------------------------------------------
     Rutas de archivos
 --------------------------------------------------------------------------------------------------------
 """
-# Ruta del archivo con los usuarios registrados
-ruta_usuarios = "Archivos/Usuarios/usuariosRegistrados.txt"
+# Ruta del archivo con los usuarios
+ruta_usuarios = "Archivos/Usuarios/Usuarios.json"
 # Ruta del archivo con las mascotas 
 ruta_mascotas = "Archivos/Mascotas/Mascotas.json"
 # Ruta del archivo con los dueños
 ruta_duenios = "Archivos/Duenios/Duenios.json"
 # Ruta del archivo con el log de auditoria
 ruta_log_auditoria = "Archivos/Log/LogAuditoria.txt"
+# Ruta del archivo con el calendario
+ruta_calendario = "Archivos/Calendario/Calendario.json"
 """
 --------------------------------------------------------------------------------------------------------
     Funciones para cargar y guardar los archivos JSON
@@ -33,6 +36,9 @@ def guardar_datos_json(ruta, datos):
 
 mascotas = cargar_datos_json(ruta_mascotas)
 duenios = cargar_datos_json(ruta_duenios)
+usuarios = cargar_datos_json(ruta_usuarios)
+calendario = cargar_datos_json(ruta_calendario)
+
 """
 --------------------------------------------------------------------------------------------------------
   Datos Globales
@@ -40,12 +46,152 @@ duenios = cargar_datos_json(ruta_duenios)
 """
 #Tupla con los tipos de mascotas
 tiposMascotas = ("Perro" , "Gato", "Ave", "Reptil", "Roedor", "Pez", "Otro")
+#Tupla con los tipos de usuarios
+roles_validos = ("Gerente", "Recepcionista", "Veterinario")
+usuario_actual = None
+#Tupla con los días de la semana que trabaja la veterinaria
+dias_validos = ("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado")
+
+# --------------------------------------------------------------------------------------------------------
+# Funciones de validación y normalización 
+# --------------------------------------------------------------------------------------------------------
+def validar_usuario(usuarios):
+    while True:
+        usuario = input("Ingrese un nombre de usuario: ").strip()
+        if not any(u["usuario"] == usuario for u in usuarios):
+            return usuario
+        else:
+            print("Usuario existente. Intente otra vez.")
+
+def validar_contrasenia():
+    while True:
+        contrasenia = input("Ingrese una contraseña: ").strip()
+        if len(contrasenia) < 8:
+            print("La contraseña debe tener al menos 8 caracteres.")
+            continue
+        if not re.search(r"[A-Z]", contrasenia):
+            print("La contraseña debe contener al menos una letra mayúscula.")
+            continue
+        if not re.search(r"[a-z]", contrasenia):
+            print("La contraseña debe contener al menos una letra minúscula.")
+            continue
+        if not re.search(r"\d", contrasenia):
+            print("La contraseña debe contener al menos un número.")
+            continue
+        if not re.search(r"[!@#$%^&*()_+{}\[\]:;<>,.?/~\\-]", contrasenia):
+            print("La contraseña debe contener al menos un símbolo.")
+            continue
+        return contrasenia
+
+def validar_nombre():
+    while True:
+        nombre = input("Ingrese su nombre y apellido: ").strip()
+        partes = nombre.split()
+        if len(partes) < 2:
+            print("Debe ingresar al menos nombre y apellido.")
+            continue
+        if all(re.match(r"^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$", p) for p in partes):
+            return nombre.title()
+        else:
+            print("El nombre solo debe contener letras (sin números ni símbolos).")
+
+def validar_telefono():
+    while True:
+        telefono = input("Ingrese su número de teléfono: ").strip()
+        solo_digitos = re.sub(r"[^\d]", "", telefono)
+        if not re.match(r"^\+?[\d\s\-()]+$", telefono):
+            print("El teléfono contiene caracteres inválidos.")
+            continue
+        if len(solo_digitos) < 8 or len(solo_digitos) > 15:
+            print("El número de teléfono debe tener entre 8 y 15 dígitos.")
+            continue
+        return telefono
+
+def validar_correo():
+    patron = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$"
+    while True:
+        correo = input("Ingrese su correo electrónico: ").strip()
+        if re.match(patron, correo):
+            return correo.lower()
+        else:
+            print("Correo electrónico inválido. Intente nuevamente.")
+
+def validar_rol():
+    global roles_validos
+    while True:
+        print("Roles disponibles:", ", ".join(roles_validos))
+        rol = input("Ingrese su rol: ")
+        rol_limpio = limpiar_texto(rol)
+        if rol_limpio in  roles_validos:
+            return rol_limpio
+        else:
+            print("Rol inválido. Intente nuevamente.")
+
+def limpiar_texto(texto):
+
+    texto_limpio = texto.strip().lower()
+    texto_limpio = ''.join(c for c in unicodedata.normalize('NFD', texto_limpio) if unicodedata.category(c) != 'Mn')#normalize  á => a ´ , category limpia y solo deja las letras
+    return texto_limpio.title()
+    
+def validar_rango_horario(rango, rangos_existentes):
+    patron = r"^(0[8-9]|1[0-7]):[0-5]\d-(0[8-9]|1[0-7]|18):[0-5]\d$"
+    if not re.match(patron, rango):
+        return False
+
+    formato = "%H:%M"
+    inicio, fin = (datetime.strptime(h, formato) for h in rango.split("-"))
+
+    # Validar que inicio < fin
+    if inicio >= fin:
+        return False
+
+    # Validar que no se superponga con rangos existentes
+    for existente in rangos_existentes:
+        ini_existente, fin_existente = (datetime.strptime(h, formato) for h in existente.split("-"))
+        if inicio < fin_existente and fin > ini_existente:
+            return False
+
+    return True
+
+
+def ordenar_rangos(rangos):
+    return sorted(rangos, key=lambda r: datetime.strptime(r.split("-")[0], "%H:%M"))
+
+def ordenar_disponibilidad(disponibilidad):
+
+    return {dia: disponibilidad[dia] for dia in dias_validos if dia in disponibilidad}
 
 """
 --------------------------------------------------------------------------------------------------------
   Funciones auxiliares y validación
 --------------------------------------------------------------------------------------------------------
 """
+
+def muestraDatosMascota(mascota):
+    nombresDuenios = [duenio["nombre"] for duenio in duenios if duenio["id"] in mascota["dueños"]]
+
+    print(f"ID: {mascota['id']}")
+    print(f"Nombre: {mascota['nombre']}")
+    print(f"Tipo: {mascota['tipo']}")
+    print(f"Edad: {mascota['edad']} años")
+    print(f"Dueñx/s: {' - '.join(nombresDuenios)}")
+    print("----------------------------------")
+
+
+# ae podria usar lambda
+def muestraDatosDuenios(duenio):
+        mascotasDuenio = [mascota["nombre"] for mascota in mascotas if duenio["id"] in mascota["dueños"]]
+        
+        print("--- Persona ---")
+        print(f"ID: {duenio['id']}")
+        print(f"Nombre: {duenio['nombre']}")
+        print("--- Contacto ---")
+        print(f"Teléfono: {duenio['telefono']}")
+        print(f"Mail: {duenio['mail']}")
+        print("--- Mascotas ---")
+        print(f"Mascotas: {' - '.join(mascotasDuenio)}")
+        print("----------------------------------")
+
 def input_id_valido(identificador):
     while True:
         try:
@@ -368,23 +514,6 @@ def asociar_mascota_a_duenio(id_mascota, duenios, mascotas):
   Funciones para Modificar Mascotas y/o Dueñxs
 --------------------------------------------------------------------------------------------------------
 """
-#funciones reutilizables
-
-
-def busquedaDeId(datosUsuarios):
-    individuoEncontrado=False
-    ingreseIdIndividuo =int(input("ingresar ID de Individuo a editar: "))
-    while individuoEncontrado!= True:
-        ingreseIdIndividuo =int(input("ingresar ID correctamente : "))#ingresar id de la mascota a editar
-        while not str(ingreseIdIndividuo).isnumeric():
-            ingreseIdIndividuo= input("Ingrese el ID correctamente:")#en caso de no ser caracter numerico vuelve a solicitarlo
-            #Utilizamos un booleano para corroborar que el individuo exista
-        for usuario in datosUsuarios:
-            if  ingreseIdIndividuo == usuario['id']:
-                individuoEncontrado=True
-    
-    return ingreseIdIndividuo
-
 #reutilizacion de cambio de ID
 def cambioDeId(individuo, datosUsuarios):
     flag = False
@@ -398,160 +527,105 @@ def cambioDeId(individuo, datosUsuarios):
             individuo["id"] = nuevoId
             flag = True
             return individuo
-#reutilizacion cambio nombre
 
-def cambioNombre(individuo):
-    nuevoNombre = input("ingresar nombre: ")
-    nombreSinEspacios=nuevoNombre.remplace(" ","") 
-    while not nombreSinEspacios.isalpha(): # en caso de tener caracter numerico vuelve solicitar el nombre
-        print("Nombre inválido: solo letras")
-        nuevoNombre = input("ingresar nombre valido: ")
-        nombreSinEspacios=nuevoNombre.remplace(" ","")
-    individuo["nombre"] = nuevoNombre.title()
-    return individuo
+def seleccionar_elemento_por_id(lista, mostrar_func):
+    mostrar_func(lista)
+    id_valido = input_id_valido(input("Ingrese el ID: "))
+    elemento = buscar_por_id(lista, id_valido)
+    if not elemento:
+        print("ID no encontrado.")
+    return elemento
 
-
-
-# se podria usar lambda
-def muestraDatosMascota(mascota):
-    nombresDuenios = [duenio["nombre"] for duenio in duenios if duenio["id"] in mascota["dueños"]]
-
-    print(f"ID: {mascota['id']}")
-    print(f"Nombre: {mascota['nombre']}")
-    print(f"Tipo: {mascota['tipo']}")
-    print(f"Edad: {mascota['edad']} años")
-    print(f"Dueñx/s: {' - '.join(nombresDuenios)}")
-    print("----------------------------------")
-
-
-# ae podria usar lambda
-def muestraDatosDuenios(duenio):
-        mascotasDuenio = [mascota["nombre"] for mascota in mascotas if duenio["id"] in mascota["dueños"]]
-        
-        print("--- Persona ---")
-        print(f"ID: {duenio['id']}")
-        print(f"Nombre: {duenio['nombre']}")
-        print("--- Contacto ---")
-        print(f"Teléfono: {duenio['telefono']}")
-        print(f"Mail: {duenio['mail']}")
-        print("--- Mascotas ---")
-        print(f"Mascotas: {' - '.join(mascotasDuenio)}")
-        print("----------------------------------")
-
-
-#Funciones de  2: Modificar Mascota y/o Dueñx
-def  modificarInformacion(mascotas, duenios):
+def modificarInformacion(mascotas, duenios, usuario_logueado):
     while True:
-        print("""\n--- Consultar Información ---\n
-                1: modificar datos mascotas\n
-                2: modificar datos dueños\n
-                3: Volver al menú principal""")
-        opcion = int(input("ingresar opcion deseada: "))
+        print("""\n--- Modificar Información ---\n
+1: Modificar datos de mascota
+2: Modificar datos de dueñx
+3: Volver al menú principal""")
+        opcion = input("Seleccione una opción: ").strip()
 
-        if opcion == 1:
-            editarDatosMascotas(mascotas)
-        if opcion == 2:
-            editarDatosDuenio(duenios)
-        if opcion == 3:
-            #volver al menu principal
-            return True
+        if opcion == "1":
+            editar_mascota(mascotas, usuario_logueado)
+        elif opcion == "2":
+            editar_duenio(duenios, usuario_logueado)
+        elif opcion == "3":
+            return
+        else:
+            print("Opción inválida.")
 
-   #1: modificar datos mascotas     
-def editarDatosMascotas(mascotas):
+def editar_mascota(mascotas, usuario_logueado):
+    mascota = seleccionar_elemento_por_id(mascotas, mostrar_ids_mascotas)
+    if not mascota:
+        return
 
-    idMascotaEncontrada= busquedaDeId(mascotas)
+    while True:
+        opcion = menu_edicion_mascota(mascota)
+        if opcion == "0":
+            break
+        procesar_opcion_edicion_mascota(opcion, mascota, mascotas)
 
-    for mascota in mascotas:
-        if idMascotaEncontrada == mascota["id"]:
-            print (mascota)# se muestran los datos de la mascota para corroborar que es la correcto
-            print("""--- Seleccione atributo a editar: ---\n
-                1: ID\n
-                2: nombre\n
-                3: Tipo\n
-                4: Edad\n
-                0: Finalizar Sesión
-                --------------------------------------""")
-            opcion =int(input("seleccione opcion: "))
-            
-            if opcion == 0:
-                return True
+    guardar_datos_json(ruta_mascotas, mascotas)
+    registrar_log_auditoria(usuario_logueado, f"Modificó mascota ID {mascota['id']}")
+    print("Cambios guardados.")
 
-            if opcion == 1:#para cambiar el id se corrobora que no se encuentre entre los existentes
-                cambioDeId(mascota, mascotas)
-                            
-            if opcion == 2:
-                cambioNombre(mascota)
-            if opcion == 3:
-                cambioTipoMascota = input("ingrese el tipo de mascota: ")
-                while not cambioTipoMascota.isalpha(): #solicita nuevamente si no es caracter alfabetico 
-                    print("Tipo inválido: solo letras")
-                    cambioTipoMascota = input("ingrese un tipo de mascota valido: ")
-                if cambioTipoMascota.title() in tiposMascotas: # busca que el tipo este en la tupla
-                    mascota["tipo"] = cambioTipoMascota.title()# lo transforma a titulo para no crear un posible error
-                else:
-                    return False # en caso de no existir el tipo devuelve al menu
-            if opcion == 4:
-                cambioEdadMascota = input("ingrese edad a modificar: ")
-                while not str(cambioEdadMascota).isnumeric():
-                    cambioEdadMascota= input("Ingrese la edad correctamente:")# en caso de no ser numerico volvemos a solicitar el numero
-                mascota["edad"] = int(cambioEdadMascota) 
-            
-            #nombresDuenios = [duenio["nombre"] for duenio in duenios if duenio["id"] in mascota["dueños"]] #lista por comprension para retornar el nombre de los dueños en una lista
-        
-            muestraDatosMascota(mascota)
-            return False
-      
+def menu_edicion_mascota(mascota):
+    print(f"""\n--- Editar Mascota: {mascota['nombre']} ---
+1: Cambiar ID
+2: Cambiar nombre
+3: Cambiar tipo
+4: Cambiar edad
+0: Finalizar edición""")
+    return input("Seleccione una opción: ").strip()
 
-#2: modificar datos dueños
-    
-def editarDatosDuenio(duenios):
-    idDuenioEncontrado = busquedaDeId(duenios)
-        
-    for duenio in duenios:
-        if idDuenioEncontrado == duenio["id"]:
-            print (duenio)# se muestran los datos del dueño para corroborar que es el correcto
-            print("""--- Seleccione atributo a editar: ---\n
-                1: ID\n
-                2: nombre\n
-                3: Telefono\n
-                4: mail\n
-                0: Finalizar Sesión
-                --------------------------------------""")
-            opcion =int(input("seleccione opcion: "))
+def procesar_opcion_edicion_mascota(opcion, mascota, mascotas):
+    if opcion == "1":
+        cambioDeId(mascota, mascotas)
+    elif opcion == "2":
+        mascota["nombre"] = input_nombre_valido("Nuevo nombre: ").title()
+    elif opcion == "3":
+        mascota["tipo"] = input_tipo_mascota("Nuevo tipo: ", tiposMascotas)
+    elif opcion == "4":
+        mascota["edad"] = input_numero_entero("Nueva edad: ")
+    else:
+        print("Opción inválida.")
 
-            if opcion == 0:
-                return True
+def editar_duenio(duenios, usuario_logueado):
+    duenio = seleccionar_elemento_por_id(duenios, mostrar_ids_duenios)
+    if not duenio:
+        return
 
-            if opcion == 1: #para cambiar el id se corrobora que no se encuentre entre los existentes
-                cambioDeId(duenio, duenios)    
-            
-            if opcion == 2:
-                cambioNombre(duenio)
-            
-            if opcion == 3:
-                nuevoTelefono = input("ingresar nuevo telefono: ")
-                while not nuevoTelefono.isnumeric():# se asegura que todos los caracteres sean numericos
-                        nuevoTelefono= input("Ingrese el telefono correctamente:")
-                duenio["telefono"] = nuevoTelefono
-            #cambio mail
-            if opcion == 4:
-                obligatorio=["@gmail.com", "@yahoo.com","@hotmail.com","@uade.edu.ar"]
-                nuevoMail=input("ingresar nuevo mail: ")# realizamos un filtro para asegurar de que el mail sea correcto
-                flag2=False # booleano como condicion para salir del bucle
-                while flag2!=True:
-                    for i in range(len(nuevoMail)):
-                        if nuevoMail[i]=="@":
-                            if nuevoMail[i:] in obligatorio:#Compara los caracteres desde el @ hasta el final 
-                                duenio["mail"]= nuevoMail# en caso de ser un tipo de mail valido realiza la modificacion
-                                print("el mail es correcto!!")
-                                flag2=True
-                    if flag2==False:
-                        nuevoMail = input("ingresar un mail valido: ")
-                                               
-            #mascotasDuenio = [mascota["nombre"] for mascota in mascotas if duenio["id"] in mascota["dueños"]]#utilizamos listas por comprension para mostras nombres de las mascotas
-            muestraDatosDuenios(duenio)
-            return False
+    while True:
+        opcion = menu_edicion_duenio(duenio)
+        if opcion == "0":
+            break
+        procesar_opcion_edicion_duenio(opcion, duenio)
 
+    guardar_datos_json(ruta_duenios, duenios)
+    registrar_log_auditoria(usuario_logueado, f"Modificó dueñx ID {duenio['id']}")
+    print("Cambios guardados.")
+
+
+def menu_edicion_duenio(duenio):
+    print(f"""\n--- Editar Dueñx: {duenio['nombre']} ---
+1: Cambiar ID
+2: Cambiar nombre
+3: Cambiar teléfono
+4: Cambiar mail
+0: Finalizar edición""")
+    return input("Seleccione una opción: ").strip()
+
+
+def procesar_opcion_edicion_duenio(opcion, duenio):
+    if opcion == "1":
+        cambioDeId(duenio, duenios)
+    elif opcion == "2":
+        duenio["nombre"] = input_nombre_valido("Nuevo nombre: ").title()
+    elif opcion == "3":
+        duenio["telefono"] = input_numero_entero("Nuevo teléfono: ")
+    elif opcion == "4":
+        duenio["mail"] = input_email_valido("Nuevo mail: ")
+    else:
+        print("Opción inválida.")
 
 """
 --------------------------------------------------------------------------------------------------------
@@ -567,7 +641,8 @@ def consultarInformacion(mascotas, duenios):
                 3: Buscar mascota por nombre\n
                 4: Buscar dueño por nombre\n
                 5: Ver Historial de mascota\n
-                6: Volver al menú principal""")
+                6: Ver mascotas por tipo\n
+                7: Volver al menú principal""")
 
 
         opcionConsulta = input("Seleccione una opción: ")
@@ -583,299 +658,306 @@ def consultarInformacion(mascotas, duenios):
         elif opcionConsulta == "5":
             MenuHistorialMascota(mascotas)
         elif opcionConsulta == "6":
+            mostrarMascotasPorTipo(mascotas)
+        elif opcionConsulta == "7":
             return # Volvemos al menú principal
         else:
             print("Opción inválida. Intente nuevamente.")
 
 #Función mostrar todas las mascotas en la lista de mascotas
 def mostrarTodasLasMascotas(mascotas, duenios):
-    """
-    Lista todas las mascotas con sus datos y dueñxs.
-    """
-    if not mascotas:
-        print("No hay mascotas registradas.")
+
+    if not mascotas: #Verificamos si la lista de diccionarios está vacía (Devuelve falso si está vacía)
+        print("No hay mascotas registradas.") #En caso de que este vacía mostramos por pantalla que no hay mascotas registradas
         return
-    print("\n--- Lista de Todas las Mascotas ---")
-    for mascota in mascotas:
-        nombres_duenio = [duenio['nombre'] for duenio in duenios if duenio['id'] in mascota['dueños']]
-        print(f"ID: {mascotas['id']}")
-        print(f"Nombre: {mascotas['nombre']}")
-        print(f"Tipo: {mascotas['tipo']}")
-        print(f"Edad: {mascotas['edad']} años")
-        print(f"Dueñx/s: {' - '.join(nombres_duenio)}")
-        print("----------------------------------")
+    for mascota in mascotas: #Recorremos cada mascota en la lista de diccionarios "mascotas"
+        muestraDatosMascota(mascota)
+        
 
 #Función para mostrar todos los dueños de la lista de diccionarios "duenios"
 def mostrarTodosLosDuenios(mascotas, duenios):
-    """
-    Lista todos los dueñxs con sus datos y mascotas asociadas.
-    """
-    if not duenios:
-        print("No hay dueñxs registrados.")
+    if not duenios: #Verificamos si la lista de diccionarios está vacía (Devuelve falso si está vacía)
+        print("No hay dueños registrados.") #En caso de que este vacía mostramos por pantalla que no hay dueños registrados
         return
-    print("\n--- Lista de Todos los Dueñxs ---")
-    for duenio in duenios:
-        mascotas_duenio = [mascota['nombre'] for mascota in mascotas if duenio['id'] in mascota['dueños']]
-        print(f"ID: {duenio['id']}")
-        print(f"Nombre: {duenio['nombre']}")
-        print(f"Teléfono: {duenio['telefono']}")
-        print(f"Mail: {duenio['mail']}")
-        print(f"Mascotas: {' - '.join(mascotas_duenio)}")
-        print("----------------------------------")
 
+    for duenio in duenios: #Recorremos cada dueño en la lista de diccionarios "duenios"
+        muestraDatosDuenios(duenio)
+        
 
 #Función para buscar las mascotas por nombre (Devuelve todas las coincidencias con ese nombre)
 def buscarMascotaPorNombre(mascotas, duenios):
-    """
-    Busca mascotas cuyo nombre contenga el criterio.
-    Muestra sus datos y todo el historial.
-    """
-    criterio = input_texto_obligatorio("Ingrese el nombre de la mascota a buscar: ").title()
-    mascotas_encontradas = [m for m in mascotas if criterio in m['nombre'].title()]
-    if not mascotas_encontradas:
+    nombreMascota = input("Ingrese el nombre de la mascota a buscar: ").lower()
+    listaMascotaEncontrada = []  # Inicializamos una lista vacía para guardar las coincidencias de mascotas encontradas
+
+    for mascota in mascotas: #Recorremos todas las mascotas en la lista de diccionarios "mascotas"
+        if nombreMascota in mascota["nombre"].lower(): #Si el nombre ingresado conincide con alguno de la lista de diccionarios lo agregamos a "listaMascotaEncontrada"
+            listaMascotaEncontrada.append(mascota)
+
+    if not listaMascotaEncontrada: #Verificamos si la lista donde almacenamos las mascotas encontradas está vacía (Devuelve falso si está vacía)
         print("No se encontraron mascotas con ese nombre.")
-        return
-    for mascota in mascotas_encontradas:
-        nombres_duenios = [duenio['nombre'] for duenio in duenios if duenio['id'] in mascota['dueños']]
-        print("\n--- Mascota ---")
-        print(f"ID: {mascota['id']}")
-        print(f"Nombre: {mascota['nombre']}")
-        print(f"Tipo: {mascota['tipo']}")
-        print(f"Edad: {mascota['edad']} años")
-        print("Historial Médico:")
-        for fila in mascota['historial']:
-            print(" - ".join(fila))
-        print(f"Dueñx/s: {' - '.join(nombres_duenios)}")
-        print("----------------------------------")
+    else:
+        for mascota in listaMascotaEncontrada:
+            nombres_duenios = [duenio['nombre'] for duenio in duenios if duenio['id'] in mascota['dueños']] #Recorremos todas las mascotas encontradas
+            muestraDatosMascota(mascota)
+
+            for fila in mascota['historial']:
+                print(" - ".join(fila))
+            print("--- Dueñx/s ---")
+            print(f"Dueñx/s: {' - '.join(nombres_duenios)}")
 
 #Función para buscar los dueños por nombre (Devuelve todas las coincidencias con ese nombre)
 def buscarDuenioPorNombre(mascotas, duenios):
-    """
-    Busca dueñx por nombre exacto.
-    Muestra sus datos y mascotas asociadas.
-    """
-    criterio = input_texto_obligatorio("Ingrese el nombre del dueñx a buscar: ").title()
-    duenios_encontrados = [duenio for duenio in duenios if criterio == duenio['nombre'].title()]
-    if not duenios_encontrados:
+    nombreDuenio = input("Ingrese el nombre del dueñx a buscar: ").lower()
+    listaDueniosEncontrados = []
+
+     
+    for duenio in duenios: # Recorremos todos los dueños de la lista de diccionarios "duenios"
+        if nombreDuenio == duenio["nombre"].lower(): #Si el nombre ingresado conincide con alguno de la lista de diccionarios "duenios" lo agregamos a "listaDueniosEncontrados"
+            listaDueniosEncontrados.append(duenio)
+
+
+    if not listaDueniosEncontrados: #Verificamos si la lista donde almacenamos los dueños encontrados está vacía (Devuelve falso si está vacía)
         print("No se encontraron dueñxs con ese nombre.")
+    else:
+        for duenio in listaDueniosEncontrados: #Recorremos todos los dueños encontrados
+            muestraDatosDuenios(duenio)
+            
+
+#mostrar mascotas por tipo 6
+def mostrarMascotasPorTipo(mascotas):
+    tipoAnimal= input("ingrese el tipo de mascota: ")
+    if tipoAnimal.title() not in tiposMascotas:
+        print("Error, tipo animal no encontrado")
         return
-    for duenio in duenios_encontrados:
-        mascotas_duenio = [mascota['nombre'] for mascota in mascotas if duenio['id'] in mascota['dueños']]
-        print("\n--- Dueñx ---")
-        print(f"ID: {duenio['id']}")
-        print(f"Nombre: {duenio['nombre']}")
-        print(f"Teléfono: {duenio['telefono']}")
-        print(f"Mail: {duenio['mail']}")
-        print(f"Mascotas: {' - '.join(mascotas_duenio)}")
-        print("----------------------------------")
+    listaTipo=list(filter(lambda x:x["tipo"]== tipoAnimal.title(),mascotas))
+    for mascota in listaTipo:
+        muestraDatosMascota(mascota)
+    return
 
 def MenuHistorialMascota(mascotas):
-    """
-    Menú para ver historial completo o últimas 10 visitas.
-    """
     while True:
-        print("""
---- Consultar Historial ---
-1: Ver todo el historial de la mascota
-2: Ver últimas 10 visitas a la veterinaria
-3: Volver al menú principal
-""")
-        opcion = input_numero_entero("Seleccione una opción: ")
-        if opcion == 1:
+        print("""\n--- Consultar Historial ---\n
+                1: Ver todo el historial de la mascota\n
+                2: Ver últimas 10 visitas a la veterinaria\n
+                3: Volver al menú principal""")
+
+
+        opcionHistorial = int(input("Seleccione una opción: "))
+
+        if opcionHistorial == 1:
             mostrarHistorialMascota(mascotas)
-        elif opcion == 2:
+        elif opcionHistorial == 2:
             mostrarUltimasDiezVisitas(mascotas)
-        elif opcion == 3:
+        elif opcionHistorial == 3:
             return
         else:
             print("Opción inválida. Intente nuevamente.")
 
-
 #Función para buscar el historial médico de la mascota
 def mostrarHistorialMascota(mascotas):
-    """
-    Muestra todo el historial de una mascota dada su ID.
-    0 muestra IDs disponibles.
-    """
-    if not mascotas:
-        print("No hay mascotas registradas.")
+    
+    if not mascotas: #Verificamos si la lista de diccionarios está vacía (Devuelve falso si está vacía)
+        print("No hay mascotas registradas.") #En caso de que este vacía mostramos por pantalla que no hay mascotas registradas
         return
-    while True:
-        id_input = input("Ingrese el ID de la mascota (0 para ver lista): ").strip()
-        id_mascota = input_id_valido(id_input)
-        if id_mascota == 0:
-            mostrar_ids_mascotas(mascotas)
-        else:
-            break
-    mascota = buscar_por_id(mascotas, id_mascota)
-    if mascota:
-        print(f"\nHistorial de {mascota['nombre']}:" )
-        for fila in id_mascota['historial']:
-            print(" - ".join(fila))
-        print()
-    else:
-        print("No se encontró la mascota.")
+
+    #Solicitamos al usuario que ingrese el ID de masocta al que queremos buscar
+    mascota_id = input("Ingrese el ID de la mascota: ").strip()
+    while not mascota_id.isdigit():
+        print("El ID ingresado no es un ID váido")
+        mascota_id = input("Ingrese el ID de la mascota: ").strip()
+    
+    mascota_id = int(mascota_id)
+
+    print("\nHistorial Mascota: ")
+    for mascota in mascotas:
+        if mascota["id"] == mascota_id:
+            for fila in mascota['historial']:
+                print(" - ".join(fila))
 
 #Función para buscar las últimas 10 visitas médicas de la mascota
 def mostrarUltimasDiezVisitas(mascotas):
-    """
-    Muestra las últimas 10 visitas de una mascota dada su ID.
-    0 muestra IDs disponibles.
-    """
-    if not mascotas:
-        print("No hay mascotas registradas.")
+    if not mascotas: #Verificamos si la lista de diccionarios está vacía (Devuelve falso si está vacía)
+        print("No hay mascotas registradas.") #En caso de que este vacía mostramos por pantalla que no hay mascotas registradas
         return
+
+    #Solicitamos al usuario que ingrese el ID de masocta al que queremos buscar
+    mascota_id = input("Ingrese el ID de la mascota: ").strip()
+    while not mascota_id.isdigit():
+        print("El ID ingresado no es un ID váido")
+        mascota_id = input("Ingrese el ID de la mascota: ").strip()
+
+    mascota_id = int(mascota_id)
+
+    print("\nHistorial Mascota: ")
+    for mascota in mascotas:
+        if mascota["id"] == mascota_id:
+            historial = mascota["historial"]
+
+            ultimasDiezVisitas = historial[-10:]
+            for fila in ultimasDiezVisitas:
+                print(" - ".join(fila))
+"""
+--------------------------------------------------------------------------------------------------------
+Menu Mi Perfil
+--------------------------------------------------------------------------------------------------------
+"""
+def menu_perfil():
     while True:
-        id_input = input("Ingrese el ID de la mascota (0 para ver lista): ").strip()
-        id_mascota = input_id_valido(id_input)
-        if id_mascota == 0:
-            mostrar_ids_mascotas(mascotas)
-        else:
+        print("""
+              --- Mi Perfil ---
+              1. Ver mis datos
+              2. Modificar mis datos
+              0. Volver al Menú Principal
+                """)
+        opcion = input("Seleccione una opción: ")
+        if opcion == "1":
+            print("Ha seleccionado Ver mis datos")
+            ver_usuario(usuario_actual)
+        elif opcion == "2":
+            print("Ha seleccionado Modificar mis datos")
+            modificar_datos_usuario(usuario_actual)
+        elif opcion == "0":
+            print("Volviendo al Menú Principal...")
             break
-    mascota = buscar_por_id(mascotas, id_mascota)
-    if mascota:
-        ult = mascota['historial'][-10:]
-        print(f"\nÚltimas 10 visitas de {mascota['nombre']}:" )
-        for fila in ult:
-            print(" - ".join(fila))
-        print()
+        else:
+            print("Opción inválida. Intente nuevamente.")
+def ver_usuario(usuario_actual):
+    if usuario_actual:
+        print("\n--- Datos del Usuario Actual ---")
+        print(f"Usuario: {usuario_actual['usuario']}")
+        print(f"Contraseña: {usuario_actual['clave']}")
+        print(f"Nombre: {usuario_actual['nombre']}")
+        print(f"Teléfono: {usuario_actual['telefono']}")
+        print(f"Correo: {usuario_actual['correo']}")
+        print(f"Rol: {usuario_actual['rol']}")
+        print("Disponibilidad:")
+        for dia, horarios in usuario_actual["disponibilidad"].items():
+            if horarios:
+                print(f"{dia}: {', '.join(horarios)}")
+            else:
+                print(f"{dia}: No disponible")
     else:
-        print("No se encontró la mascota.")
+        print("No hay usuario actual.")    
+
+def modificar_datos_usuario(usuario_actual):
+    while True:
+        print("""
+              --- Modificar Mis Datos ---
+              1. Modificar nombre y apellido
+              2. Modificar nombre de usuario
+              3. Modificar contraseña
+              4. Modificar teléfono
+              5. Modificar correo
+              6. Modificar rol
+              7. Modificar disponibilidad    
+              0. Volver al Menú de Perfil
+          """)
+        opcion = input("Seleccione una opción: ")
+        if opcion == "1":
+            nuevo_nombre = validar_nombre()
+            usuario_actual["nombre"] = nuevo_nombre
+            print("Nombre modificado exitosamente.")
+        elif opcion == "2":
+            nuevo_usuario = validar_usuario(usuarios)
+            usuario_actual["usuario"] = nuevo_usuario
+            print("Nombre de usuario modificado exitosamente.")
+        elif opcion == "3":
+            nueva_clave = validar_contrasenia()
+            usuario_actual["clave"] = nueva_clave
+            print("Contraseña modificada exitosamente.")
+        elif opcion == "4":
+            nuevo_telefono = validar_telefono()
+            usuario_actual["telefono"] = nuevo_telefono
+            print("Teléfono modificado exitosamente.")  
+        elif opcion == "5":
+            nuevo_correo = validar_correo()
+            usuario_actual["correo"] = nuevo_correo
+            print("Correo modificado exitosamente.")
+        elif opcion == "6":
+            nuevo_rol = validar_rol()
+            usuario_actual["rol"] = nuevo_rol
+            print("Rol modificado exitosamente.")
+        elif opcion == "7":
+            usuario_actual["disponibilidad"] = ingresar_disponibilidad(dias_validos)
+            print("Disponibilidad modificada exitosamente.")
+        elif opcion == "0":
+            print("Volviendo al Menú de Perfil...")
+            break
+        else:
+            print("Opción inválida. Intente nuevamente.")
+        
 
 """
 --------------------------------------------------------------------------------------------------------
 Funciones de Log In y Sign Up
 --------------------------------------------------------------------------------------------------------
 """
-# Función para cargar usuarios desde el archivo
-def cargar_usuarios(ruta_usuarios):
-    usuarios = {}
-    try:
-        archivo = open(ruta_usuarios, "r", encoding="utf-8")
-        for linea in archivo:
-            if "," in linea:
-                usuario, contrasenia = linea.strip().split(",", 1)
-                usuarios[usuario] = contrasenia
-        archivo.close()
-    except FileNotFoundError:
-        print("Archivo de usuarios no encontrado. Se iniciará vacío.")
-    return usuarios
+def iniciar_sesion(usuarios):
+    intentos = 0
+    while intentos < 3:
+        usuario_input = input("\nUsuario: ").strip()
+        clave_input = input("Contraseña: ").strip()
+        for usuario in usuarios:
+            if usuario["usuario"] == usuario_input and usuario["clave"] == clave_input:
+                print(f"\nBienvenido, {usuario['nombre']} ({usuario['rol']})")
+                return usuario
+        intentos += 1
+        print(f"Usuario o clave incorrectos. Intentos restantes: {3 - intentos}")
+    print("\nAcceso denegado. Excediste el número de intentos.")
+    return None
 
-# Función para guardar un nuevo usuario
-def guardar_nuevo_usuario(usuario, contrasenia, ruta):
-    try:
-        archivo = open(ruta, "a", encoding="utf-8")
-        archivo.write(f"{usuario},{contrasenia}\n")
-        archivo.close()
-    except Exception as e:
-        print(f"No se pudo guardar el usuario: {e}")
 
-def validacionNombreUsuario():
+def ingresar_disponibilidad(dias_validos):
+    print("Ingrese la disponibilidad del usuario (deje el día vacío para terminar).")
+    disponibilidad = {}
     while True:
-        usuario = input("Ingresar nombre de usuario (0 para cancelar): ").strip()
-        if usuario:
-            return usuario
-        print("El nombre de usuario no puede estar vacío.")
+        dia= input("Día (ej. lunes): ")
+        if dia == "":
+            break
+        texto_limpio = limpiar_texto(dia)
+        if texto_limpio not in dias_validos:
+            print("Día inválido. Intente nuevamente.")
+            continue
+        rangos_validos = disponibilidad.get(texto_limpio, []).copy()
+        print(f"Ingrese los horarios (ej. 08:00(INICIO)-12:00(FIN),14:00(INICIO)-18:00(FIN))")
+        print("Presione Enter para finalizar.")
+        while True:
+            horarios_ingresados = input(f"Horarios para {dia}: ")
+            rangos = [h.strip() for h in horarios_ingresados.split(",") if h.strip()] #separa los horarios_ingresaros ","
+            if horarios_ingresados == "":
+                break
+            for r in rangos:
+                if validar_rango_horario(r, rangos_validos):
+                    rangos_validos.append(r)
+                    disponibilidad[texto_limpio] = ordenar_rangos(rangos_validos)
 
-def validacionContrasenia():
-    while True:
-        contrasenia = input("Ingresar contraseña (mínimo 8 caracteres alfanuméricos, 0 para cancelar): ").strip()
-        if contrasenia == "0":
-            return "0"
-        if len(contrasenia) >= 8 and contrasenia.isalnum():
-            return contrasenia
-        print("La contraseña debe tener al menos 8 caracteres y contener solo letras o números.")
-
-def crear_usuario(usuarios, ruta_usuarios):
-    print("\n--- Registro de nuevo usuario (Ingrese 0 para volver al menú) ---")
+                else:
+                    print(f"Rango inválido o solapado: {r}. No se agregó.")
+    return ordenar_disponibilidad(disponibilidad)
     
-    usuario_valido = False
-    while not usuario_valido:
-        usuario = validacionNombreUsuario()
-        if usuario == "0":
-            print("Registro de usuario cancelado\n")
-            return
-        
-        if usuario in usuarios:
-            print(f"\nEl nombre de usuario '{usuario}' ya existe. Por favor intente con otro nombre de usuario.")
-        else:
-            usuario_valido = True  #No existe un usuario con ese nombre
 
-    contrasenia = validacionContrasenia()
-    if contrasenia == "0":
-        print("Registro de usuario cancelado\n")
-        return
-    
-    usuarios[usuario] = contrasenia
-    guardar_nuevo_usuario(usuario, contrasenia, ruta_usuarios)
-    print(f"¡Usuario '{usuario}' registrado correctamente!\n")
+def crear_usuario(usuarios):
+    print("\nCrear nuevo usuario")
+    nuevo_usuario = {}
+    nuevo_usuario["usuario"] = validar_usuario(usuarios)
+    nuevo_usuario["clave"] = validar_contrasenia()
+    nuevo_usuario["nombre"] = validar_nombre()
+    nuevo_usuario["telefono"] = validar_telefono()
+    nuevo_usuario["correo"] = validar_correo()
+    nuevo_usuario["rol"] = validar_rol()
+    nuevo_usuario["disponibilidad"] = ingresar_disponibilidad(dias_validos)
+    usuarios.append(nuevo_usuario)
+    guardar_datos_json(ruta_usuarios, usuarios)
+    print("Usuario creado exitosamente.")
+    print(json.dumps(nuevo_usuario, indent=4, ensure_ascii=False)) #mostrar nuevo usuario
 
-def inicio_sesion(usuarios):
-    print("\n--- Inicio de sesión (Ingrese 0 para volver al menú) ---")
-    while True:
-        usuario = input("Usuario: ").strip()
-        if usuario == "0":
-            print("Inicio de sesión cancelado\n")
-            return False
-
-        contrasenia = input("Contraseña: ").strip()
-        if contrasenia == "0":
-            print("Inicio de sesión cancelado\n")
-            return False
-        
-        if usuarios.get(usuario) == contrasenia:
-            print(f"¡Bienvenidx {usuario}!")
-            return usuario
-        else:
-            print("Usuario o contraseña incorrectos. Intente nuevamente.")
-
-
-def cambiar_contrasenia(usuariosRegistrados, ruta_usuarios):
-    pass
- #En proceso todavía
-    '''
-    print("\n--- Cambio de contraseña (0 para cancelar) ---")
-    usuario = input("Usuario: ").strip()
-    if usuario == "0":
-        print("Operación cancelada.\n")
-        return
-    if usuario not in usuariosRegistrados:
-        print(f"El usuario '{usuario}' no existe.\n")
-        return
-
-    vieja = input("Contraseña antigua: ").strip()
-    if vieja == "0":
-        print("Operación cancelada.\n")
-        return
-    if usuariosRegistrados[usuario] != vieja:
-        print("Contraseña incorrecta.\n")
-        return
-
-    # Pedimos la nueva dos veces
-    nueva = input("Nueva contraseña (mínimo 8 caracteres alfanuméricos): ").strip()
-    if nueva == "0":
-        print("Operación cancelada.\n")
-        return
-    repetir = input("Reingrese la nueva contraseña: ").strip()
-    if nueva != repetir:
-        print("No coinciden. Intenta de nuevo.\n")
-        return
-    if len(nueva) < 8 or not nueva.isalnum():
-        print("La contraseña debe tener al menos 8 caracteres alfanuméricos.\n")
-        return
-
-    # Cambio efectivo y guardado
-    usuariosRegistrados[usuario] = nueva
-    guardar_todos_usuarios(usuariosRegistrados, ruta_usuarios)
-    print("Contraseña modificada exitosamente.\n")
-    '''
 
 """
 --------------------------------------------------------------------------------------------------------
-MENU - PROGRAMA PRINCIPAL
+MENU - Dueños y Mascotas
 --------------------------------------------------------------------------------------------------------
 """
-def menuPrincipal(mascotas, duenios, tiposMascotas, usuario_logueado):
+def menu_duenios_mascotas(mascotas, duenios, tiposMascotas, usuario_logueado):
     salir = False
     while not salir:
         print("\n=== Menú Principal ===")
@@ -911,13 +993,97 @@ def menuPrincipal(mascotas, duenios, tiposMascotas, usuario_logueado):
                 print("Opción inválida. Intente nuevamente.")
         except ValueError:
             print("Error - Debe ingresar una opción válida (1 , 2, 3, 4, 5 o 0).")
+
+#  --------------------------------------------------------------------------------------------------------
+# Menu Gestión de Visitas Médicas 
+# --------------------------------------------------------------------------------------------------------
+        
+def menu_visitas_medicas():
+    while True:
+        print("""
+              --- Gestión de Turnos ---
+              1. Ver disponibilidad de veterinarios
+              2. Agendar nuevo turno
+              3. Ver calendario de turnos
+              4. Modificar turno programado
+              5. Eliminar turno programado
+              0. Volver al Menú Principal
+                """)
+        opcion = input("Seleccione una opción: ")
+        if opcion == "1":
+            print("Ha seleccionado Ver disponibilidad de veterinarios")
+            consultar_disponibilidad(usuarios)
+        elif opcion == "2":
+            print("Ha seleccionado Agendar nuevo turno")
+            registrar_turno(mascotas, usuario_actual,calendario)
+        elif opcion == "3":
+            print("Ha seleccionado Ver calendario de turnos")
+            consultar_turno(mascotas)
+        elif opcion == "4":
+            print("Ha seleccionado Modificar turno programado")
+            modificar_turno(mascotas)
+        elif opcion == "5":
+            print("Ha seleccionado Eliminar turno programado")
+            eliminar_turno(mascotas)
+        elif opcion == "0":
+            print("Volviendo al Menú Principal...")
+            break
+        else:
+            print("Opción inválida. Intente nuevamente.")       
+def consultar_disponibilidad(usuarios):
+    print("\n--- Disponibilidad de Veterinarios ---")
+    for usuario in usuarios:
+        if usuario["rol"] == "Veterinario":
+            print(f"\nNombre: {usuario['nombre']}")
+            print("Disponibilidad:")
+            for dia, horarios in usuario["disponibilidad"].items():
+                if horarios:
+                    print(f"{dia}: {', '.join(horarios)}")
+                else:
+                    print(f"{dia}: No disponible")
+
+def registrar_turno(mascotas, usuario_actual, calendario):
+    if not mascotas:
+        print("No hay mascotas registradas. Por favor, registre una mascota primero.")
+        return menuPrincipal()
+    mascota = input("Ingrese el nombre de la mascota: ").strip()
+
+"""
+--------------------------------------------------------------------------------------------------------
+MENU - PROGRAMA PRINCIPAL
+--------------------------------------------------------------------------------------------------------
+"""
+def menuPrincipal():
+    while True:
+        print("""
+              --- Menú Principal ---
+              1. Gestión de Mascotas y Dueñxs
+              2. Visitas Médicas
+              3. Mi Perfil
+              0. Finalizar Sesión
+                """)
+        opcion = input("Seleccione una opción: ")
+        if opcion == "1":
+            menu_duenios_mascotas()
+        elif opcion == "2":
+            menu_visitas_medicas()
+        elif opcion == "3":
+            menu_perfil()
+        elif opcion == "0":
+            print("Saliendo del sistema...")
+            break
+        else:
+            print("Opción inválida. Por favor, intente nuevamente.")
+
 """
 --------------------------------------------------------------------------------------------------------
 MENU - Log In / Sign Up
 --------------------------------------------------------------------------------------------------------
 """
 def menu_inicio(ruta_usuarios):
-    usuariosRegistrados = cargar_usuarios(ruta_usuarios)
+
+    usuarios = cargar_datos_json(ruta_usuarios)
+    global usuario_actual
 
     print("""--- ¡Bienvenido! ---\n
 1. Iniciar sesión\n
@@ -928,20 +1094,27 @@ def menu_inicio(ruta_usuarios):
     while True:
         try:
             opcion = int(input("Seleccione una opción: "))
-            if opcion == 1:
-                usuario_logueado = inicio_sesion(usuariosRegistrados)
-                if usuario_logueado:
-                    menuPrincipal(mascotas, duenios, tiposMascotas, usuario_logueado)
-            elif opcion == 2:
-                crear_usuario(usuariosRegistrados,ruta_usuarios)
-                usuariosRegistrados = cargar_usuarios(ruta_usuarios)  #recargar usuarios después de registrar
-            elif opcion == 3:
-                cambiar_contrasenia(usuariosRegistrados, ruta_usuarios)
-            elif opcion == 0:
-                print("Sesión Finalizada.")
-                return False
+            if opcion == "1":
+                if not usuarios:
+                    print("No hay usuarios registrados. ¿Desea crear uno? (s/n)")
+                    respuesta = input().strip().lower()
+                    if respuesta == "s":
+                        crear_usuario(usuarios)
+                        usuarios = cargar_datos_json(ruta_usuarios)
+                        continue
+                    elif respuesta == "n":
+                        print("¡Hasta luego!")
+                        break
+                usuario_actual = iniciar_sesion(usuarios)
+                menuPrincipal(mascotas, duenios, tiposMascotas, usuario_actual)
+            elif opcion == "2":
+                crear_usuario(usuarios)
+                usuarios = cargar_datos_json(ruta_usuarios)
+            elif opcion == "0":
+                print("¡Hasta luego!")
+                break
             else:
-                print("Opción inválida.")
+                print("Opción inválida. Intente nuevamente.")
         except ValueError:
             print("Debe ingresar un número.")
 
