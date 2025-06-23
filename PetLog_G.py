@@ -22,13 +22,18 @@ ruta_log_auditoria = "Archivos/Log/LogAuditoria.txt"
 """
 def cargar_datos_json(ruta):
     try:
+        # Intenta abrir el archivo y leer su contenido como JSON
         with open(ruta, "r", encoding="utf-8") as archivo:
             return json.load(archivo)
+    # En caso de que el archivo no existe o el JSON está mal formado, devuelve una lista vacía    
     except (FileNotFoundError, json.JSONDecodeError):
         return []
 
 def guardar_datos_json(ruta, datos):
+    # Abre el archivo
     with open(ruta, "w", encoding="utf-8") as archivo:
+        # Guarda los datos en formato JSON con indentación legible
+        # ensure_ascii=False permite usar tildes y caracteres no ASCII
         json.dump(datos, archivo, indent=4, ensure_ascii=False)
 
 mascotas = cargar_datos_json(ruta_mascotas)
@@ -56,14 +61,15 @@ def validar_usuario(usuarios):
     while True:
         usuario = input("Ingrese un nombre de usuario: ").strip()
         
+        # Verifica que no esté vacío
         if not usuario:
             print("El nombre de usuario no puede estar vacío.")
             continue
-        
+        # Verifica que no esté duplicado en la lista
         if any(u["usuario"] == usuario for u in usuarios):
             print("Usuario existente. Intente otra vez.")
             continue
-
+        # Devuelve el nombre de usuario válido      
         return usuario
 
 def validar_contrasenia():
@@ -72,33 +78,43 @@ def validar_contrasenia():
         if len(contrasenia) < 8:
             print("La contraseña debe tener al menos 8 caracteres.")
             continue
+
+        # Verifica que contenga al menos una mayúscula
         if not re.search(r"[A-Z]", contrasenia):
             print("La contraseña debe contener al menos una letra mayúscula.")
             continue
+        # Verifica que contenga al menos una minúscula
         if not re.search(r"[a-z]", contrasenia):
             print("La contraseña debe contener al menos una letra minúscula.")
             continue
+        # Verifica que contenga al menos un número
         if not re.search(r"\d", contrasenia):
             print("La contraseña debe contener al menos un número.")
             continue
+        # Verifica que contenga al menos un símbolo especial
         if not re.search(r"[!@#$%^&*()_+{}\[\]:;<>,.?/~\\-]", contrasenia):
             print("La contraseña debe contener al menos un símbolo.")
             continue
+        # Si pasa todas las validaciones, retorna la contraseña
         return contrasenia
 
 def validar_telefono():
     while True:
         telefono = input("Ingrese su número de teléfono: ").strip()
+        # Elimina todos los caracteres que no sean dígitos
         solo_digitos = re.sub(r"[^\d]", "", telefono)
+        # Verifica que solo contenga caracteres válidos: dígitos, espacios, +, (), -
         if not re.match(r"^\+?[\d\s\-()]+$", telefono):
             print("El teléfono contiene caracteres inválidos.")
             continue
+        # Verifica que la cantidad de dígitos esté entre 8 y 15
         if len(solo_digitos) < 8 or len(solo_digitos) > 15:
             print("El número de teléfono debe tener entre 8 y 15 dígitos.")
             continue
         return telefono
 
 def validar_rol(roles_validos):
+    # Solicita un rol y lo valida contra la lista de roles válidos
     while True:
         print("Roles disponibles:", ", ".join(roles_validos))
         rol = input("Ingrese su rol: ")
@@ -108,7 +124,9 @@ def validar_rol(roles_validos):
             print("Rol inválido. Intente nuevamente.")
     
 def validar_rango_horario(rango, rangos_existentes):
+    # Definmimos el patrón válido: horario entre 08:00 y 18:59, formato HH:MM-HH:MM
     patron = r"^(0[8-9]|1[0-7]):[0-5]\d-(0[8-9]|1[0-7]|18):[0-5]\d$"
+    # Verifica que el formato del rango sea correcto
     if not re.match(patron, rango):
         return False
 
@@ -128,17 +146,23 @@ def validar_rango_horario(rango, rangos_existentes):
     return True
 
 def ordenar_rangos(rangos):
+    # Ordena los rangos por su hora de inicio.
+    # Se convierte el primer elemento de cada rango (antes del guión) en objeto datetime para compararlos.
     return sorted(rangos, key=lambda r: datetime.strptime(r.split("-")[0], "%H:%M"))
 
 def ordenar_disponibilidad(disponibilidad):
-
+    # Crea un nuevo diccionario, ordenado según el orden de 'dias_validos'
+    # Solo incluye los días que están presentes en la disponibilidad actual
     return {dia: disponibilidad[dia] for dia in dias_validos if dia in disponibilidad}
 
 def normalizar_dia(dia):
+    # Crea una tabla de reemplazo de letras con tildes a letras sin tilde
     tildes = str.maketrans("áéíóúÁÉÍÓÚñÑ", "aeiouAEIOUnN")
+    # Aplica los reemplazos, elimina espacios y pone la primer letra en mayúscula
     return dia.translate(tildes).strip().capitalize()
 
 def validar_dia(dia, dias_validos):
+    # Verifica si el día ya normalizado está en la lista
     return normalizar_dia(dia) in dias_validos
 
 
@@ -150,14 +174,28 @@ def validar_dia(dia, dias_validos):
 def input_id_valido(identificador):
     while True:
         try:
+            # Solicita entrada, quita espacios
             entrada = input(identificador).strip()
+            # Verifica que sea numérico
             if not entrada.isdigit():
                 raise ValueError("Debe ingresar un número.")
+            # Convierte a entero y lo retorna
             return int(entrada)
         except ValueError as e:
+            # Muestra mensaje de error
             print(f"Error: {e}")
 
 def buscar_por_id(lista, id_busqueda):
+    """
+    Busca un elemento dentro de una lista de diccionarios por su ID.
+
+    Parámetros:
+        lista: Lista de diccionarios que contienen
+        id_busqueda: ID del elemento que se desea encontrar.
+
+    Devuelve:
+        Elemento si hay coincidencia o None si no se encuentra.
+    """
     for item in lista:
         if item["id"] == id_busqueda:
             return item
@@ -165,7 +203,10 @@ def buscar_por_id(lista, id_busqueda):
 
 def mostrar_ids_mascotas(mascotas):
     """
-    Imprime en pantalla cada mascota con su ID y nombre.
+    Imprime en pantalla cada mascota registrada con su ID y nombre.
+
+    Parámetros:
+        Recibe la lista de mascotas registradas.
     """
     if not mascotas:
         print("No hay mascotas registradas.")
@@ -178,7 +219,10 @@ def mostrar_ids_mascotas(mascotas):
 
 def mostrar_ids_duenios(duenios):
     """
-    Imprime en pantalla cada dueñx con su ID y nombre.
+    Imprime en pantalla cada dueñx registrado con su ID y nombre.
+
+    Parámetros:
+        Recibe la lista de mascotas registradas.
     """
     if not duenios:
         print("No hay dueñxs registrados.")
@@ -189,6 +233,9 @@ def mostrar_ids_duenios(duenios):
     print("--------------------------\n")
 
 def input_texto_obligatorio(mensaje):
+    """
+    Solicita al usuario que ingrese un texto no vacío.
+    """
     while True:
         texto = input(mensaje).strip()
         if texto:
@@ -196,6 +243,9 @@ def input_texto_obligatorio(mensaje):
         print("Este campo no puede estar vacío.")
 
 def input_numero_entero(mensaje):
+    """
+    Solicita al usuario que ingrese un número entero válido.
+    """
     while True:
         valor = input(mensaje).strip()
         if valor.isdigit():
@@ -203,6 +253,16 @@ def input_numero_entero(mensaje):
         print("Debe ingresar un número válido.")
 
 def validar_correo(mensaje):
+    """
+    Solicita al usuario un correo electrónico válido y lo valida con una expresión regular (patron)
+    Acepta direcciones que tengan formato 'usuario@dominio.com'
+
+    Parámetros:
+        Recibe el mensaje el que se mostrará al solicitar el correo.
+
+    Retorna:
+        Correo electrónico válido en minúsculas.
+    """
     patron = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$"
     while True:
         correo = input(mensaje).strip()
@@ -213,15 +273,17 @@ def validar_correo(mensaje):
 
 
 def validar_nombre(mensaje):
+    # Expresión regular que permite letras (con y sin tilde), eñes y espacios
     patron = re.compile(r"^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")
     while True:
-        nombre = input(mensaje).strip()
-        if patron.fullmatch(nombre):
-            return nombre.title()
+        nombre = input(mensaje).strip() # Solicita y limpia el texto
+        if patron.fullmatch(nombre): # Valida el formato completo
+            return nombre.title()  #Devuelve el nombre con la primer letra de cada palabra en mayúscula
         print("Nombre inválido. Solo se permiten letras y espacios.")
 
 
 def input_tipo_mascota(mensaje, tipos):
+    # Solicita al usuario ingresar el tipo de mascota valido  (Perro, Gato, Ave, Reptil, Roedor, Pez, Otro)
     while True:
         tipo = input(mensaje).strip().title()
         if tipo in tipos:
@@ -233,7 +295,7 @@ def input_tipo_mascota(mensaje, tipos):
   Funciones Log Auditoría
 --------------------------------------------------------------------------------------------------------
 """      
-#Acá irían las funciones para que quede un registro de lo que realizan los usuarios, debería quedar guardado en el archivo de logAuditoria
+
 def registrar_log_auditoria(usuario, accion):
     """
     Registra una línea de auditoría en el archivo LogAuditoria.txt con:
@@ -381,7 +443,7 @@ def registrar_visita(mascotas, usuario_logueado):
 
 def crear_visita(usuario_logueado):
     fecha = datetime.now().strftime("%d/%m/%Y")
-    motivo = input_texto_obligatorio("Ingrese el motivo de la consulta: ").title()
+    motivo = input_texto_obligatorio("Ingrese el motivo de la consulta (Ej: Vacuna, Operacion, Chequeo, etc.): ").title()
     diagnostico = input_texto_obligatorio("Ingrese el diagnóstico: ").title()
     tratamiento = input_texto_obligatorio("Ingrese el tratamiento indicado: ").title()
     return [
@@ -1089,12 +1151,12 @@ def pedir_rangos_para_dia(dia, rangos_existentes):
         entrada = input(f"Horarios para {dia}: ").strip()
         if entrada == "":
             break
-        rangos = [r.strip() for r in entrada.split(",") if r.strip()]
-        for r in rangos:
-            if validar_rango_horario(r, rangos_existentes + nuevos_rangos):
-                nuevos_rangos.append(r)
+        rangos = [rango.strip() for rango in entrada.split(",") if rango.strip()]
+        for rango in rangos:
+            if validar_rango_horario(rango, rangos_existentes + nuevos_rangos):
+                nuevos_rangos.append(rango)
             else:
-                print(f"Rango inválido o solapado: {r}")
+                print(f"Rango inválido o solapado: {rango}")
     return ordenar_rangos(rangos_existentes + nuevos_rangos)
 
 
