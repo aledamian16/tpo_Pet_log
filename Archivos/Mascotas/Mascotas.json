@@ -1,0 +1,207 @@
+[
+    {
+        "id": 1,
+        "nombre": "Messi",
+        "tipo": "Perro",
+        "edad": 2,
+        "dueños": [
+            2,
+            1
+        ],
+        "historial": [
+            [
+                "Fecha: 12/04/2025",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna antirrábica",
+                "Tratamiento: Observación post-vacuna durante 15 minutos",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 05/05/2025",
+                "Motivo: Chequeo",
+                "Diagnóstico: Control general, sin anomalías",
+                "Tratamiento: Higiene bucal recomendada",
+                "Empleado: Martin Garcia",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 19/06/2025",
+                "Motivo: Operación",
+                "Diagnóstico: Cálculo urinario detectado",
+                "Tratamiento: Extracción quirúrgica exitosa, seguimiento con dieta",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 03/06/2025",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna triple felina",
+                "Tratamiento: Revisar refuerzo en 30 días",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 22/06/2025",
+                "Motivo: Chequeo",
+                "Diagnóstico: Ligera inflamación en encías",
+                "Tratamiento: Se recetó enjuague oral y control semanal",
+                "Empleado: Martin Garcia",
+                "Rol: Veterinario"
+            ]
+        ]
+    },
+    {
+        "id": 2,
+        "nombre": "Sasha",
+        "tipo": "Gato",
+        "edad": 7,
+        "dueños": [
+            3
+        ],
+        "historial": [
+            [
+                "Fecha: 12/04/2025",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna antirrábica",
+                "Tratamiento: Observación post-vacuna durante 15 minutos",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 05/05/2025",
+                "Motivo: Chequeo",
+                "Diagnóstico: Control general, sin anomalías",
+                "Tratamiento: Higiene bucal recomendada",
+                "Empleado: Martin Garcia",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 19/06/2025",
+                "Motivo: Operación",
+                "Diagnóstico: Cálculo urinario detectado",
+                "Tratamiento: Extracción quirúrgica exitosa, seguimiento con dieta",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 03/06/2025",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna triple felina",
+                "Tratamiento: Revisar refuerzo en 30 días",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 22/06/2025",
+                "Motivo: Chequeo",
+                "Diagnóstico: Ligera inflamación en encías",
+                "Tratamiento: Se recetó enjuague oral y control semanal",
+                "Empleado: Martin Garcia",
+                "Rol: Veterinario"
+            ]
+        ]
+    },
+    {
+        "id": 3,
+        "nombre": "Bulma",
+        "tipo": "Perro",
+        "edad": 12,
+        "dueños": [
+            2
+        ],
+        "historial": [
+            [
+                "Fecha: 12/04/2025",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna antirrábica",
+                "Tratamiento: Observación post-vacuna durante 15 minutos",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 05/05/2025",
+                "Motivo: Chequeo",
+                "Diagnóstico: Control general, sin anomalías",
+                "Tratamiento: Higiene bucal recomendada",
+                "Empleado: Martin Garcia",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 19/06/2025",
+                "Motivo: Operación",
+                "Diagnóstico: Cálculo urinario detectado",
+                "Tratamiento: Extracción quirúrgica exitosa, seguimiento con dieta",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 03/06/2025",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna triple felina",
+                "Tratamiento: Revisar refuerzo en 30 días",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 22/06/2025",
+                "Motivo: Chequeo",
+                "Diagnóstico: Ligera inflamación en encías",
+                "Tratamiento: Se recetó enjuague oral y control semanal",
+                "Empleado: Martin Garcia",
+                "Rol: Veterinario"
+            ]
+        ]
+    },
+    {
+        "id": 4,
+        "nombre": "Señor Bigotes",
+        "tipo": "Gato",
+        "edad": 7,
+        "dueños": [
+            3
+        ],
+        "historial": [
+            [
+                "Fecha: 12/04/2025",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna antirrábica",
+                "Tratamiento: Observación post-vacuna durante 15 minutos",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 05/05/2025",
+                "Motivo: Chequeo",
+                "Diagnóstico: Control general, sin anomalías",
+                "Tratamiento: Higiene bucal recomendada",
+                "Empleado: Martin Garcia",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 19/06/2025",
+                "Motivo: Operación",
+                "Diagnóstico: Cálculo urinario detectado",
+                "Tratamiento: Extracción quirúrgica exitosa, seguimiento con dieta",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 03/06/2025",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna triple felina",
+                "Tratamiento: Revisar refuerzo en 30 días",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 22/06/2025",
+                "Motivo: Chequeo",
+                "Diagnóstico: Ligera inflamación en encías",
+                "Tratamiento: Se recetó enjuague oral y control semanal",
+                "Empleado: Martin Garcia",
+                "Rol: Veterinario"
+            ]
+        ]
+    }
+]
