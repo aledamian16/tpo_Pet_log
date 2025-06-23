@@ -886,8 +886,8 @@ def editarDatosDuenio(duenios, usuario_logueado, ruta_duenios):
 """
 #Menú de consulta de Información
 def consultarInformacion(mascotas, duenios):
-    while True:
-        print("""\n--- Consultar Información ---\n
+    
+    print("""\n--- Consultar Información ---\n
 1: Ver todas las mascotas\n
 2: Ver todos los dueños\n
 3: Buscar mascota por nombre\n
@@ -896,25 +896,28 @@ def consultarInformacion(mascotas, duenios):
 6: Buscar en historial de mascota\n
 7: Volver al menú principal""")
 
+    while True:
+        try:
+            opcionConsulta = int(input("Menú Consultas - Seleccione una opción: "))
 
-        opcionConsulta = input("Seleccione una opción: ")
-
-        if opcionConsulta == "1":
-            mostrarTodasLasMascotas(mascotas, duenios)
-        elif opcionConsulta == "2":
-            mostrarTodosLosDuenios(mascotas, duenios)
-        elif opcionConsulta == "3":
-            buscarMascotaPorNombre(mascotas, duenios)
-        elif opcionConsulta == "4":
-            buscarDuenioPorNombre(mascotas, duenios)
-        elif opcionConsulta == "5":
-            MenuHistorialMascota(mascotas)
-        elif opcionConsulta == "6":
-            busqueda_en_historial(mascotas)
-        elif opcionConsulta == "7":
-            return # Volvemos al menú principal
-        else:
-            print("Opción inválida. Intente nuevamente.")
+            if opcionConsulta == 1:
+                mostrarTodasLasMascotas(mascotas, duenios)
+            elif opcionConsulta == 2:
+                mostrarTodosLosDuenios(mascotas, duenios)
+            elif opcionConsulta == 3:
+                buscarMascotaPorNombre(mascotas, duenios)
+            elif opcionConsulta == 4:
+                buscarDuenioPorNombre(mascotas, duenios)
+            elif opcionConsulta == 5:
+                MenuHistorialMascota(mascotas)
+            elif opcionConsulta == 6:
+                busqueda_en_historial(mascotas)
+            elif opcionConsulta == 7:
+                return # Volvemos al menú principal
+            else:
+                print("Opción inválida. Intente nuevamente (1 , 2, 3, 4, 5, 6 o 7)")
+        except ValueError:
+            print("Debe ingresar un número")
 
 #Función mostrar todas las mascotas en la lista de mascotas
 def mostrarTodasLasMascotas(mascotas, duenios):
@@ -1002,22 +1005,26 @@ def MenuHistorialMascota(mascotas):
     """
     Menú para ver historial completo o últimas 10 visitas.
     """
-    while True:
-        print("""
+    
+    print("""
 --- Consultar Historial ---
 1: Ver todo el historial de la mascota
 2: Ver últimas 10 visitas a la veterinaria
 3: Volver al menú principal
 """)
-        opcion = input_numero_entero("Seleccione una opción: ")
-        if opcion == 1:
-            mostrarHistorialMascota(mascotas)
-        elif opcion == 2:
-            mostrarUltimasDiezVisitas(mascotas)
-        elif opcion == 3:
-            return
-        else:
-            print("Opción inválida. Intente nuevamente.")
+    while True:
+        try:
+            opcion = int(input("Seleccione una opción: "))
+            if opcion == 1:
+                mostrarHistorialMascota(mascotas)
+            elif opcion == 2:
+                mostrarUltimasDiezVisitas(mascotas)
+            elif opcion == 3:
+                return
+            else:
+                print("Opción inválida. Intente nuevamente.")
+        except ValueError:
+            print("Debe ingresar un número.")
 
 
 #Función para buscar el historial médico de la mascota
