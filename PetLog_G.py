@@ -55,10 +55,16 @@ dias_validos = ("Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado")
 def validar_usuario(usuarios):
     while True:
         usuario = input("Ingrese un nombre de usuario: ").strip()
-        if not any(u["usuario"] == usuario for u in usuarios):
-            return usuario
-        else:
+        
+        if not usuario:
+            print("El nombre de usuario no puede estar vacío.")
+            continue
+        
+        if any(u["usuario"] == usuario for u in usuarios):
             print("Usuario existente. Intente otra vez.")
+            continue
+
+        return usuario
 
 def validar_contrasenia():
     while True:
@@ -120,7 +126,6 @@ def validar_rango_horario(rango, rangos_existentes):
             return False
 
     return True
-
 
 def ordenar_rangos(rangos):
     return sorted(rangos, key=lambda r: datetime.strptime(r.split("-")[0], "%H:%M"))
@@ -394,22 +399,27 @@ def crear_visita(usuario_logueado):
 --------------------------------------------------------------------------------------------------------
 """
 def menu_agregar(mascotas, duenios, tipos_mascotas,usuario_logueado):
-    while True:
-        print("""\n--- Menú Agregar ---
+    print("""\n--- Menú Agregar ---
                 1: Agregar dueñx
                 2: Agregar mascota
                 3: Volver al menú principal""")
-        opcion = input("Seleccione una opción: ").strip()
+    
+    while True:
+        try:
+            opcion = int(input("MENÚ AGREGAR - Seleccione una opción: "))
+        except ValueError:
+            print("Debe ingresar un número válido.")
+            continue
 
-        if opcion == "1":
+        if opcion == 1:
             agregar_duenio(duenios, mascotas,usuario_logueado)
             guardar_datos_json(ruta_duenios, duenios)
             guardar_datos_json(ruta_mascotas, mascotas)
-        elif opcion == "2":
+        elif opcion == 2:
             agregar_mascota(mascotas, duenios, tipos_mascotas,usuario_logueado)
             guardar_datos_json(ruta_duenios, duenios)
             guardar_datos_json(ruta_mascotas, mascotas)
-        elif opcion == "3":
+        elif opcion == 3:
             return # Volver al menú principal
         else:
             print("Opción inválida.")
@@ -424,7 +434,7 @@ def generar_id(lista):
     
 def agregar_duenio(duenios, mascotas,usuario_logueado):
     nuevo_id = generar_id(duenios)
-
+    print("\n=== Agregar Dueñx ===")
     nombre = validar_nombre("Nombre del dueñx: ").title()
     telefono = input_numero_entero("Teléfono (solo números): ")
     email = validar_correo("Correo electrónico: ")
@@ -441,7 +451,7 @@ def agregar_duenio(duenios, mascotas,usuario_logueado):
     registrar_log_auditoria(usuario_logueado, f"Agregó un nuevo dueñx: {nombre} - ID: {nuevo_id}")
     # Asociar a mascota
     if mascotas:
-        opcion = input("¿Desea asociar este nuevo dueñx a una mascota? (1: Sí, 2: No): ").strip()
+        opcion = input("¿Desea asociar este nuevo dueñx a una mascota existente? (1: Sí, 2: No): ").strip()
         if opcion == "1":
             asociar_duenio_a_mascota(nuevo_id, mascotas)
 
@@ -449,7 +459,7 @@ def agregar_duenio(duenios, mascotas,usuario_logueado):
 
 def agregar_mascota(mascotas, duenios, tipos_mascotas,usuario_logueado):
     nuevo_id = generar_id(mascotas)
-
+    print("\n=== Agregar Mascota ===")
     nombre = validar_nombre("Nombre de la mascota: ").title()
     tipo = input_tipo_mascota("Tipo de mascota: ", tipos_mascotas)
     edad = input_numero_entero("Edad de la mascota: ")
@@ -479,33 +489,52 @@ def asociar_duenio_a_mascota(id_duenio, mascotas):
         print("No hay mascotas registradas.")
         return
 
-    id_mascota = input_numero_entero("Ingrese el ID de la mascota a asociar: ")
-    mascota = buscar_por_id(mascotas, id_mascota)
+    while True:
+        id_input = input("Ingrese el ID de la mascota a asociar (0 para ver lista): ").strip()
+        if id_input == "0":
+            mostrar_ids_mascotas(mascotas)
+            continue
+        if not id_input.isdigit():
+            print("Debe ingresar un número válido.")
+            continue
+        
+        id_mascota = int(id_input)
+        mascota = buscar_por_id(mascotas, id_mascota)
 
-    if mascota:
-        mascota["dueños"].append(id_duenio)
-        print(f"Dueñx asociado correctamente a la mascota '{mascota['nombre']}'.")
-    else:
-        print("Mascota no encontrada.")
+        if mascota:
+            mascota["dueños"].append(id_duenio)
+            print(f"Dueñx asociado correctamente a la mascota '{mascota['nombre']}'.")
+            return
+        else:
+            print("Mascota no encontrada.")
 
 def asociar_mascota_a_duenio(id_mascota, duenios, mascotas):
     if not duenios:
         print("No hay dueñxs registrados.")
         return
 
-    print("Dueñxs disponibles:")
-    for d in duenios:
-        print(f"ID {d['id']}: {d['nombre']}")
+    while True:
+        id_input = input("Ingrese el ID del dueñx a asociar (0 para ver lista): ").strip()
+        if id_input == "0":
+            mostrar_ids_duenios(duenios)
+            continue
+        if not id_input.isdigit():
+            print("Debe ingresar un número válido.")
+            continue
 
-    id_duenio = input_numero_entero("Ingrese el ID del dueñx a asociar: ")
-    duenio = buscar_por_id(duenios, id_duenio)
-    mascota = buscar_por_id(mascotas, id_mascota)
+        id_duenio = int(id_input)
+        duenio = buscar_por_id(duenios, id_duenio)
+        mascota = buscar_por_id(mascotas, id_mascota)
 
-    if duenio and mascota:
-        mascota["dueños"].append(id_duenio)
-        print(f"Mascota asociada correctamente a {duenio['nombre']}.")
-    else:
-        print("Dueñx o mascota no encontrados.")
+        if duenio and mascota:
+            if id_duenio not in mascota["dueños"]:
+                mascota["dueños"].append(id_duenio)
+                print(f"Mascota asociada correctamente a {duenio['nombre']}.")
+            else:
+                print(f"La mascota ya está asociada al dueñx {duenio['nombre']}.")
+            return
+        else:
+            print("Dueñx o mascota no encontrados.")
 
 """
 --------------------------------------------------------------------------------------------------------
@@ -571,7 +600,7 @@ def cambioNombre(individuo):
     while not nombreSinEspacios.isalpha(): # en caso de tener caracter numerico vuelve solicitar el nombre
         print("Nombre inválido: solo letras")
         nuevoNombre = input("ingresar nombre valido: ")
-        nombreSinEspacios=nuevoNombre.remplace(" ","")
+        nombreSinEspacios=nuevoNombre.replace(" ","")
     individuo["nombre"] = nuevoNombre.title()
     return individuo
 
@@ -757,7 +786,8 @@ def consultarInformacion(mascotas, duenios):
 3: Buscar mascota por nombre\n
 4: Buscar dueño por nombre\n
 5: Ver Historial de mascota\n
-6: Volver al menú principal""")
+6: Buscar en historial de mascota\n
+7: Volver al menú principal""")
 
 
         opcionConsulta = input("Seleccione una opción: ")
@@ -773,6 +803,8 @@ def consultarInformacion(mascotas, duenios):
         elif opcionConsulta == "5":
             MenuHistorialMascota(mascotas)
         elif opcionConsulta == "6":
+            busqueda_en_historial(mascotas)
+        elif opcionConsulta == "7":
             return # Volvemos al menú principal
         else:
             print("Opción inválida. Intente nuevamente.")
@@ -941,56 +973,74 @@ def mostrarUltimasDiezVisitas(mascotas):
         print("No se encontró la mascota.")
 
 
-#
-#EDITAR
-#
+#Filtros de historial médico de la mascota
+def extraer_campo(fila, campo):
+    return next(
+        (item.split(":", 1)[1].strip() for item in fila if item.lower().startswith(campo.lower() + ":")),
+        ""
+    )
 
-'''
-def busquedaEnHistorial(mascotas):
-    matrizHistorial =[registro for mascota in mascotas for registro in mascota["historial"]]
-    filtrosUsados=[]
-    limiteFiltros=[1,2,3]
-    opcion=int(input("ingresar numero de opcion: "))
+def filtrar_historial_por_motivo(historial):
+    motivos_disponibles = sorted(set(extraer_campo(h, "Motivo") for h in historial))
+    print("Motivos disponibles:", ", ".join(motivos_disponibles))
+    motivo = input("Ingrese motivo exacto: ").strip().title()
+    return list(filter(lambda h: extraer_campo(h, "Motivo") == motivo, historial))
 
-    while opcion!= 0:
-        motivos=["Vacuna","Control"]
-        i=0
-        while opcion in filtrosUsados:
-            opcion=int(input("ingresar opcion no utilizada: "))
-        if filtrosUsados == limiteFiltros:
-            print("limite de filtros alcanzado")
-        if opcion==1:
-            dia=input("ingresar dia: ")
-            while int(dia) >31 or int(dia)<=1:
-                dia=input("ingresar dia: ")
-            mes=input("ingresar mes: ")
-            while int(mes) >12 or int(mes)<1:
-                mes=input("ingresar mes: ")
-            anio=input("ingresar anio: ")
-            
-            fecha=dia +"/"+mes+"/"+anio
-            dato=fecha
-            matrizHistorial=list(filter(lambda x: x[0]==dato, matrizHistorial))
-            print(matrizHistorial)
-            filtrosUsados.append(opcion)
-        if opcion==2:
-            motivo=input("ingresar motivo: ")
-            if motivo in motivos:
-                dato=motivo
-                matrizHistorial=list(filter(lambda x: x[1]==dato, matrizHistorial))
-                filtrosUsados.append(opcion)
-                print(matrizHistorial)
-        if opcion==3:
-            veterianrio=input("ingresar nombre del veterinario: ")
-            dato= veterianrio
-            matrizHistorial=list(filter(lambda x: x[4]==dato, matrizHistorial))
-            filtrosUsados.append(opcion)
-            print(matrizHistorial)
-        opcion=int(input("ingresar otra numero de opcion: "))
+def filtrar_historial_por_fecha(historial):
+    fecha = input("Ingrese fecha (dd/mm/yyyy): ").strip()
+    return list(filter(lambda h: extraer_campo(h, "Fecha") == fecha, historial))
 
-busquedaEnHistorial(mascotas)
+def filtrar_historial_por_empleado(historial):
+    nombres_disponibles = sorted(set(extraer_campo(h, "Empleado") for h in historial))
+    print("Veterinarios disponibles:", ", ".join(nombres_disponibles))
+    nombre = input("Ingrese nombre del veterinario: ").strip().title()
+    return list(filter(lambda h: extraer_campo(h, "Empleado") == nombre, historial))
 
-'''
+def busqueda_en_historial(mascotas):
+    historial = [registro for mascota in mascotas for registro in mascota.get("historial", [])]
+    if not historial:
+        print("No hay historial registrado.")
+        return
+
+    filtros_usados = set()
+
+    print("""\n--- Filtros disponibles ---
+1: Por fecha
+2: Por motivo
+3: Por nombre de veterinario
+0: Finalizar búsqueda
+""")
+
+    while len(filtros_usados) < 3:
+        try:
+            opcion = int(input("Seleccione una opción de filtro (0 para salir): "))
+        except ValueError:
+            print("Debe ingresar un número.")
+            continue
+
+        if opcion == 0:
+            break
+        if opcion in filtros_usados:
+            print("Ese filtro ya fue usado. Elija otro.")
+            continue
+
+        if opcion == 1:
+            historial = filtrar_historial_por_fecha(historial)
+        elif opcion == 2:
+            historial = filtrar_historial_por_motivo(historial)
+        elif opcion == 3:
+            historial = filtrar_historial_por_empleado(historial)
+        else:
+            print("Opción inválida.")
+            continue
+
+        filtros_usados.add(opcion)
+
+        print(f"\nResultados actuales ({len(historial)}):")
+        for fila in historial:
+            print(" - ".join(fila))
+
+    print("\n--- Fin de búsqueda ---")
 
 """
 --------------------------------------------------------------------------------------------------------

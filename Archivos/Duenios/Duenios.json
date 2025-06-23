@@ -7,26 +7,14 @@
     },
     {
         "id": 2,
-        "nombre": "bautista rojas",
+        "nombre": "Bautista Rojas",
         "telefono": "1146376425",
         "mail": "laurojas@uade.edu.ar"
     },
     {
         "id": 3,
-        "nombre": "maria eugenia cobas",
+        "nombre": "Maria Eugenia Cobas",
         "telefono": "1556788892",
         "mail": "mecobas@hotmail.com"
-    },
-    {
-        "id": 6,
-        "nombre": "Mathias Vasile",
-        "telefono": 1231231565,
-        "mail": "mathi@uade.edu"
-    },
-    {
-        "id": 7,
-        "nombre": "Bautista Quimey Rodriguez",
-        "telefono": 1231254135,
-        "mail": "lau@wert.com"
     }
 ]
