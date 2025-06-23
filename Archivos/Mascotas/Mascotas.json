@@ -1,11 +1,12 @@
 [
     {
         "id": 1,
-        "nombre": "parda",
+        "nombre": "Messi",
         "tipo": "Perro",
-        "edad": 5,
+        "edad": 2,
         "dueños": [
-            2
+            2,
+            1
         ],
         "historial": [
             [
@@ -26,6 +27,21 @@
                 "Diagnóstico: Vacuna Recibida",
                 "Tratamiento: Reposo",
                 "Veterinario: Pepito"
+            ],
+            [
+                "Fecha: 23/06/2025",
+                "Motivo: Vacuna",
+                "Diagnóstico: Vacuna Suministrada",
+                "Empleado: Lautypr",
+                "Rol: Recepcionista"
+            ],
+            [
+                "Fecha: 23/06/2025",
+                "Motivo: Chequeo",
+                "Diagnóstico: Se Le Hizo Chequeo Rutinario",
+                "Tratamiento: Se Verifico Peso De La Mascota",
+                "Empleado: Lautypr",
+                "Rol: Recepcionista"
             ]
         ]
     },
@@ -147,6 +163,29 @@
             ],
             [
                 "26/05/2012",
+                "Control",
+                "Recibida",
+                "Control de mascota, peso 15kg"
+            ]
+        ]
+    },
+    {
+        "id": 6,
+        "nombre": "sasha",
+        "tipo": "Gato",
+        "edad": 7,
+        "dueños": [
+            7
+        ],
+        "historial": [
+            [
+                "12/04/2001",
+                "Vacuna",
+                "Recibida",
+                "La mascota fue vacunada con una antirabica"
+            ],
+            [
+                "12/05/2012",
                 "Control",
                 "Recibida",
                 "Control de mascota, peso 15kg"

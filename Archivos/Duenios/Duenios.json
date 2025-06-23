@@ -1,9 +1,9 @@
 [
     {
         "id": 1,
-        "nombre": "jorge rodriguez",
+        "nombre": "Jorgito Messi",
         "telefono": "5490862451",
-        "mail": "pepe@gmail.com"
+        "mail": "luqui@gmail.com"
     },
     {
         "id": 2,
@@ -16,5 +16,17 @@
         "nombre": "maria eugenia cobas",
         "telefono": "1556788892",
         "mail": "mecobas@hotmail.com"
+    },
+    {
+        "id": 6,
+        "nombre": "Mathias Vasile",
+        "telefono": 1231231565,
+        "mail": "mathi@uade.edu"
+    },
+    {
+        "id": 7,
+        "nombre": "Bautista Quimey Rodriguez",
+        "telefono": 1231254135,
+        "mail": "lau@wert.com"
     }
 ]

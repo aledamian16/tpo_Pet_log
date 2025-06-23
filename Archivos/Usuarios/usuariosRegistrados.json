@@ -1,0 +1,163 @@
+[
+    {
+        "usuario": "jc.vet",
+        "clave": "hola1234!",
+        "nombre": "Jose Campos",
+        "telefono": "1123458756",
+        "correo": "jc@vet.com",
+        "rol": "veterinario",
+        "disponibilidad": {
+            "Sabado": [
+                "08:00-14:00"
+            ]
+        }
+    },
+    {
+        "usuario": "lr.vet",
+        "clave": "Hola1234!",
+        "nombre": "Laura Rodriguez",
+        "telefono": "1134567865",
+        "correo": "lr@vet.com",
+        "rol": "veterinario",
+        "disponibilidad": {
+            "Lunes": [
+                "08:00-13:00"
+            ],
+            "Martes": [
+                "13:00-18:00"
+            ]
+        }
+    },
+    {
+        "usuario": "mg.vet1",
+        "clave": "Hola1234!",
+        "nombre": "Martin Garcia",
+        "telefono": "12321212",
+        "correo": "mg@vet.com",
+        "rol": "veterinario",
+        "disponibilidad": {
+            "Jueves": [
+                "13:00-18:00"
+            ],
+            "Viernes": [
+                "08:00-13:00"
+            ]
+        }
+    },
+    {
+        "usuario": "am.vet",
+        "clave": "Hola1234!",
+        "nombre": "Ana Martinez",
+        "telefono": "12121212",
+        "correo": "am@vet.com",
+        "rol": "Veterinario",
+        "disponibilidad": {
+            "Martes": [
+                "08:00-13:00"
+            ],
+            "Miercoles": [
+                "13:00-18:00"
+            ]
+        }
+    },
+    {
+        "usuario": "cn.vet",
+        "clave": "Hola1234!",
+        "nombre": "Carlos Navarro",
+        "telefono": "12121212",
+        "correo": "cn@vet.com",
+        "rol": "Veterinario",
+        "disponibilidad": {
+            "Lunes": [
+                "13:00-18:00"
+            ],
+            "Miercoles": [
+                "08:00-13:00"
+            ]
+        }
+    },
+    {
+        "usuario": "dm.vet",
+        "clave": "Hola1234!",
+        "nombre": "Daniela Marquez",
+        "telefono": "12121212",
+        "correo": "dm@vet.com",
+        "rol": "Veterinario",
+        "disponibilidad": {
+            "Jueves": [
+                "08:00-13:00"
+            ],
+            "Viernes": [
+                "13:00-18:00"
+            ]
+        }
+    },
+    {
+        "usuario": "js.vet",
+        "clave": "Hola1234!",
+        "nombre": "Juan Sanches",
+        "telefono": "12121212",
+        "correo": "js@vet.com",
+        "rol": "Gerente",
+        "disponibilidad": {
+            "Lunes": [
+                "08:00-18:00"
+            ],
+            "Martes": [
+                "08:00-18:00"
+            ],
+            "Miercoles": [
+                "08:00-18:00"
+            ],
+            "Jueves": [
+                "08:00-18:00"
+            ],
+            "Viernes": [
+                "08:00-18:00"
+            ],
+            "Sabado": [
+                "08:00-14:00"
+            ]
+        }
+    },
+    {
+        "usuario": "jr.vet",
+        "clave": "Hola1234!",
+        "nombre": "Jose Rios",
+        "telefono": "12121212",
+        "correo": "jr@vet.com",
+        "rol": "Recepcionista",
+        "disponibilidad": {
+            "Lunes": [
+                "08:00-18:00"
+            ],
+            "Martes": [
+                "08:00-18:00"
+            ],
+            "Miercoles": [
+                "08:00-18:00"
+            ],
+            "Jueves": [
+                "08:00-18:00"
+            ],
+            "Viernes": [
+                "08:00-18:00"
+            ],
+            "Sabado": [
+                "08:00-18:00"
+            ],
+            "Domingo": [
+                "08:00-18:00"
+            ]
+        }
+    },
+    {
+        "usuario": "Lautypr",
+        "clave": "123456789_LautyPR",
+        "nombre": "Lautaro Rojass",
+        "telefono": "1123456789",
+        "correo": "lauty@gmail.com",
+        "rol": "Recepcionista",
+        "disponibilidad": {}
+    }
+]
