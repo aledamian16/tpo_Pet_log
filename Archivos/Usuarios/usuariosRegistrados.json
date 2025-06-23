@@ -5,7 +5,7 @@
         "nombre": "Jose Campos",
         "telefono": "1123458756",
         "correo": "jc@vet.com",
-        "rol": "veterinario",
+        "rol": "Veterinario",
         "disponibilidad": {
             "Sabado": [
                 "08:00-14:00"
@@ -18,7 +18,7 @@
         "nombre": "Laura Rodriguez",
         "telefono": "1134567865",
         "correo": "lr@vet.com",
-        "rol": "veterinario",
+        "rol": "Veterinario",
         "disponibilidad": {
             "Lunes": [
                 "08:00-13:00"
@@ -34,7 +34,7 @@
         "nombre": "Martin Garcia",
         "telefono": "12321212",
         "correo": "mg@vet.com",
-        "rol": "veterinario",
+        "rol": "Veterinario",
         "disponibilidad": {
             "Jueves": [
                 "13:00-18:00"

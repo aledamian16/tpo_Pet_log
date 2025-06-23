@@ -10,43 +10,187 @@
         ],
         "historial": [
             [
-                "Fecha: 12/04/2025",
+                "Fecha: 04/06/2023",
                 "Motivo: Vacuna",
-                "Diagnóstico: Aplicación de vacuna antirrábica",
-                "Tratamiento: Observación post-vacuna durante 15 minutos",
+                "Diagnóstico: Refuerzo anual de antirrábica",
+                "Tratamiento: Reposo breve y control",
                 "Empleado: Laura Rodriguez",
                 "Rol: Veterinario"
             ],
             [
-                "Fecha: 05/05/2025",
+                "Fecha: 15/07/2023",
                 "Motivo: Chequeo",
-                "Diagnóstico: Control general, sin anomalías",
-                "Tratamiento: Higiene bucal recomendada",
-                "Empleado: Martin Garcia",
+                "Diagnóstico: Estado físico general saludable",
+                "Tratamiento: Se recomendó chequeo dental anual",
+                "Empleado: Ana Martinez",
                 "Rol: Veterinario"
             ],
             [
-                "Fecha: 19/06/2025",
-                "Motivo: Operacion",
-                "Diagnóstico: Cálculo urinario detectado",
-                "Tratamiento: Extracción quirúrgica exitosa, seguimiento con dieta",
+                "Fecha: 21/08/2023",
+                "Motivo: Emergencia",
+                "Diagnóstico: Corte leve en la pata delantera",
+                "Tratamiento: Limpieza, puntos de sutura y control a 3 días",
                 "Empleado: Jose Campos",
                 "Rol: Veterinario"
             ],
             [
-                "Fecha: 03/06/2025",
-                "Motivo: Vacuna",
-                "Diagnóstico: Aplicación de vacuna triple felina",
-                "Tratamiento: Revisar refuerzo en 30 días",
+                "Fecha: 02/09/2023",
+                "Motivo: Desparasitacion",
+                "Diagnóstico: Parásitos intestinales detectados",
+                "Tratamiento: Medicación oral y seguimiento",
                 "Empleado: Laura Rodriguez",
                 "Rol: Veterinario"
             ],
             [
-                "Fecha: 22/06/2025",
+                "Fecha: 12/10/2023",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna triple felina",
+                "Tratamiento: Monitoreo post-aplicación",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 23/10/2023",
                 "Motivo: Chequeo",
-                "Diagnóstico: Ligera inflamación en encías",
-                "Tratamiento: Se recetó enjuague oral y control semanal",
-                "Empleado: Martin Garcia",
+                "Diagnóstico: Revisión ocular, leve irritación",
+                "Tratamiento: Colirio recetado por 5 días",
+                "Empleado: Jose Rios",
+                "Rol: Recepcionista"
+            ],
+            [
+                "Fecha: 11/11/2023",
+                "Motivo: Emergencia",
+                "Diagnóstico: Vómitos y diarrea aguda",
+                "Tratamiento: Suero, dieta blanda y control en 48 hs",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 19/12/2023",
+                "Motivo: Esterilizacion",
+                "Diagnóstico: Esterilización programada sin complicaciones",
+                "Tratamiento: Control postoperatorio y analgesia",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 08/01/2024",
+                "Motivo: Chequeo",
+                "Diagnóstico: Evaluación post quirúrgica positiva",
+                "Tratamiento: Alta médica definitiva",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 22/02/2024",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna séxtuple",
+                "Tratamiento: Observación por 15 minutos",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 04/03/2024",
+                "Motivo: Chequeo",
+                "Diagnóstico: Peso bajo para la edad",
+                "Tratamiento: Cambio de dieta recomendado",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 19/04/2024",
+                "Motivo: Desparasitacion",
+                "Diagnóstico: Tratamiento preventivo aplicado",
+                "Tratamiento: Antiparasitario oral semestral",
+                "Empleado: Jose Rios",
+                "Rol: Recepcionista"
+            ],
+            [
+                "Fecha: 01/05/2024",
+                "Motivo: Emergencia",
+                "Diagnóstico: Ingesta de cuerpo extraño (plástico)",
+                "Tratamiento: Inducción al vómito y observación",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 28/05/2024",
+                "Motivo: Vacuna",
+                "Diagnóstico: Refuerzo de vacuna contra parvovirus",
+                "Tratamiento: Control posvacuna sin incidentes",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 16/06/2024",
+                "Motivo: Chequeo",
+                "Diagnóstico: Control cardiológico, sin hallazgos",
+                "Tratamiento: Continuar controles anuales",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 30/07/2024",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna leptospira",
+                "Tratamiento: Observación y plan de refuerzo",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 12/09/2024",
+                "Motivo: Operacion",
+                "Diagnóstico: Extracción de espiga en oído",
+                "Tratamiento: Sedación leve, limpieza, alta el mismo día",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 26/10/2024",
+                "Motivo: Chequeo",
+                "Diagnóstico: Ligera gingivitis",
+                "Tratamiento: Cepillado regular y control mensual",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 10/01/2025",
+                "Motivo: Chequeo",
+                "Diagnóstico: Examen general sin anomalías",
+                "Tratamiento: Control rutinario",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 25/02/2025",
+                "Motivo: Desparasitacion",
+                "Diagnóstico: Control de parásitos sin presencia activa",
+                "Tratamiento: Aplicación preventiva",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 15/03/2025",
+                "Motivo: Vacuna",
+                "Diagnóstico: Refuerzo de vacuna séxtuple",
+                "Tratamiento: Observación postvacuna",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 08/04/2025",
+                "Motivo: Emergencia",
+                "Diagnóstico: Reacción alérgica leve por picadura",
+                "Tratamiento: Antihistamínico inyectable y monitoreo",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 20/05/2025",
+                "Motivo: Esterilizacion",
+                "Diagnóstico: Intervención programada sin complicaciones",
+                "Tratamiento: Seguimiento postoperatorio y control de puntos",
+                "Empleado: Jose Campos",
                 "Rol: Veterinario"
             ]
         ]
@@ -61,6 +205,54 @@
         ],
         "historial": [
             [
+                "Fecha: 12/07/2018",
+                "Motivo: Desparasitacion",
+                "Diagnóstico: Presencia de parásitos intestinales detectada en análisis de materia fecal",
+                "Tratamiento: Administración de antiparasitario oral y control en 15 días",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 25/11/2019",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna séxtuple anual",
+                "Tratamiento: Monitoreo durante 20 minutos post-aplicación",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 08/06/2020",
+                "Motivo: Esterilizacion",
+                "Diagnóstico: Programación para cirugía de esterilización",
+                "Tratamiento: Intervención exitosa. Reposo y control posoperatorio",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 17/09/2021",
+                "Motivo: Chequeo",
+                "Diagnóstico: Evaluación general sin hallazgos relevantes",
+                "Tratamiento: Mantener alimentación balanceada y paseos diarios",
+                "Empleado: Juan Sanches",
+                "Rol: Gerente"
+            ],
+            [
+                "Fecha: 03/02/2023",
+                "Motivo: Emergencia",
+                "Diagnóstico: Ingesta accidental de chocolate",
+                "Tratamiento: Lavado gástrico inmediato y monitoreo por 12 horas",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 14/10/2024",
+                "Motivo: Vacuna",
+                "Diagnóstico: Refuerzo anual de antirrábica",
+                "Tratamiento: Aplicación y reposo en consultorio",
+                "Empleado: Jose Rios",
+                "Rol: Recepcionista"
+            ],
+            [
                 "Fecha: 12/04/2025",
                 "Motivo: Vacuna",
                 "Diagnóstico: Aplicación de vacuna antirrábica",
@@ -74,6 +266,14 @@
                 "Diagnóstico: Control general, sin anomalías",
                 "Tratamiento: Higiene bucal recomendada",
                 "Empleado: Martin Garcia",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 03/06/2025",
+                "Motivo: Operacion",
+                "Diagnóstico: Tumor benigno en pata trasera",
+                "Tratamiento: Resección quirúrgica completa y recuperación satisfactoria",
+                "Empleado: Jose Campos",
                 "Rol: Veterinario"
             ],
             [
@@ -112,6 +312,94 @@
         ],
         "historial": [
             [
+                "Fecha: 14/03/2020",
+                "Motivo: Desparasitacion",
+                "Diagnóstico: Presencia leve de parásitos intestinales",
+                "Tratamiento: Medicación antiparasitaria oral",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 27/07/2020",
+                "Motivo: Vacuna",
+                "Diagnóstico: Aplicación de vacuna antirrábica",
+                "Tratamiento: Observación de 30 minutos postvacuna",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 10/10/2020",
+                "Motivo: Chequeo",
+                "Diagnóstico: Buen estado general, leve sarro dental",
+                "Tratamiento: Recomendación de limpieza dental",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 15/02/2021",
+                "Motivo: Emergencia",
+                "Diagnóstico: Vómitos e inapetencia",
+                "Tratamiento: Suero y control durante 24 hs",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 04/06/2021",
+                "Motivo: Vacuna",
+                "Diagnóstico: Refuerzo anual de vacuna séxtuple",
+                "Tratamiento: Observación sin reacciones adversas",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 23/09/2021",
+                "Motivo: Chequeo",
+                "Diagnóstico: Ligera cojera en pata trasera",
+                "Tratamiento: Antiinflamatorio y reposo",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 17/01/2022",
+                "Motivo: Esterilizacion",
+                "Diagnóstico: Cirugía realizada exitosamente",
+                "Tratamiento: Antibióticos y control postoperatorio",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 30/04/2022",
+                "Motivo: Vacuna",
+                "Diagnóstico: Vacuna contra leptospirosis",
+                "Tratamiento: Revisión de historial y vacunación",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 09/09/2022",
+                "Motivo: Chequeo",
+                "Diagnóstico: Control de peso y alimentación",
+                "Tratamiento: Dieta balanceada recomendada",
+                "Empleado: Laura Rodriguez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 05/03/2023",
+                "Motivo: Emergencia",
+                "Diagnóstico: Herida leve por pelea",
+                "Tratamiento: Limpieza, puntos y control",
+                "Empleado: Ana Martinez",
+                "Rol: Veterinario"
+            ],
+            [
+                "Fecha: 12/11/2024",
+                "Motivo: Desparasitacion",
+                "Diagnóstico: Revisión general sin hallazgos",
+                "Tratamiento: Dosis preventiva oral",
+                "Empleado: Jose Campos",
+                "Rol: Veterinario"
+            ],
+            [
                 "Fecha: 12/04/2025",
                 "Motivo: Vacuna",
                 "Diagnóstico: Aplicación de vacuna antirrábica",
@@ -133,22 +421,6 @@
                 "Diagnóstico: Cálculo urinario detectado",
                 "Tratamiento: Extracción quirúrgica exitosa, seguimiento con dieta",
                 "Empleado: Jose Campos",
-                "Rol: Veterinario"
-            ],
-            [
-                "Fecha: 03/06/2025",
-                "Motivo: Vacuna",
-                "Diagnóstico: Aplicación de vacuna triple felina",
-                "Tratamiento: Revisar refuerzo en 30 días",
-                "Empleado: Laura Rodriguez",
-                "Rol: Veterinario"
-            ],
-            [
-                "Fecha: 22/06/2025",
-                "Motivo: Chequeo",
-                "Diagnóstico: Ligera inflamación en encías",
-                "Tratamiento: Se recetó enjuague oral y control semanal",
-                "Empleado: Martin Garcia",
                 "Rol: Veterinario"
             ]
         ]
