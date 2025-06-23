@@ -314,6 +314,14 @@ def registrar_log_auditoria(usuario, accion):
 --------------------------------------------------------------------------------------------------------
 """
 def menu_eliminar(duenios, mascotas, usuario_logueado):
+    """
+    Muestra el menú para eliminar mascota o un dueñx.
+    
+    Parámetros:
+        duenios: Lista actual de dueñxs.
+        mascotas: Lista actual de mascotas.
+        usuario_logueado: Nombre del usuario actual, para registrar acciones en el log de auditoría.
+    """
     print("""¿Qué desea eliminar?
 1: Mascota
 2: Dueñx""")
@@ -329,9 +337,11 @@ def menu_eliminar(duenios, mascotas, usuario_logueado):
 
 
 def eliminar_mascota(mascotas, usuario_logueado):
+    # Solicita el ID de la mascota a eliminar
     while True:
         opcion = input("Ingrese el ID de la mascota a eliminar (0 para ver la lista de mascotas): ").strip()
         if opcion == "0":
+            # Muestra las mascotas registradas
             mostrar_ids_mascotas(mascotas)
             continue
         if not opcion.isdigit():
@@ -339,15 +349,18 @@ def eliminar_mascota(mascotas, usuario_logueado):
             continue
 
         id_mascota = int(opcion)
+        # Elimina la mascota y guarda los datos actualizados
         eliminar_mascota_por_id(mascotas, id_mascota, usuario_logueado)
         guardar_datos_json(ruta_mascotas, mascotas)
         return
 
 
 def eliminar_duenio(duenios, mascotas, usuario_logueado):
+    # Solicita el ID del dueño a eliminar
     while True:
         opcion = input("Ingrese el ID del dueñx a eliminar (0 para ver lista): ").strip()
         if opcion == "0":
+            # Muestra los dueños registrados
             mostrar_ids_duenios(duenios)
             continue
         if not opcion.isdigit():
@@ -355,6 +368,8 @@ def eliminar_duenio(duenios, mascotas, usuario_logueado):
             continue
 
         id_duenio = int(opcion)
+
+        # Si se eliminó correctamente, se actualizan las mascotas relacionadas y se guardan los datos
         if eliminar_duenio_por_id(duenios, id_duenio, usuario_logueado):
             actualizar_mascotas_por_duenio_eliminado(mascotas, id_duenio, duenios, usuario_logueado)
             guardar_datos_json(ruta_duenios, duenios)
@@ -363,10 +378,13 @@ def eliminar_duenio(duenios, mascotas, usuario_logueado):
 
 def eliminar_mascota_por_id(mascotas, id_mascota, usuario_logueado):
     try:
+        # Busca la mascota por su ID
         mascota = buscar_por_id(mascotas, id_mascota)
         if mascota:
+            # Si la mascota existe, se elimina de la lista de diccionarios
             mascotas.remove(mascota)
             print(f"La mascota {mascota['nombre']} con ID {id_mascota} ha sido eliminada exitosamente.")
+            # Se registra la acción en el log de auditoría
             registrar_log_auditoria(usuario_logueado, f"Eliminó una mascota: {mascota['nombre']} - ID: {id_mascota}")
         else:
             print(f"No se encontró una mascota con ID {id_mascota}.")
@@ -374,10 +392,13 @@ def eliminar_mascota_por_id(mascotas, id_mascota, usuario_logueado):
         print(f"Error al eliminar la mascota: {e}")
 
 def eliminar_duenio_por_id(duenios, id_duenio, usuario_logueado):
+    # Busca al dueño por su ID
     duenio = buscar_por_id(duenios, id_duenio)
     if duenio:
+        # Si el dueño existe, se elimina de la lista de diccionarios
         duenios.remove(duenio)
         print(f"Dueñx {duenio['nombre']} con ID {id_duenio} ha sido eliminado exitosamente.")
+        # Se registra la acción en el log de auditoría
         registrar_log_auditoria(usuario_logueado, f"Eliminó al dueño: {duenio['nombre']} - ID: {id_duenio}")
         return True
     else:
@@ -385,6 +406,16 @@ def eliminar_duenio_por_id(duenios, id_duenio, usuario_logueado):
         return False
 
 def actualizar_mascotas_por_duenio_eliminado(mascotas, id_duenio, duenios,usuario_logueado):
+    """
+    Actualiza las mascotas asociadas a un dueñx que ha sido eliminado para eliminar sus dueños asociados.
+    En caso de que una mascota se quede sin dueño se llama a la función mascota_sin_duenio para manejar el caso.
+
+    Parámetros:
+        mascotas: Lista de mascotas registradas.
+        id_duenio: ID del dueñx que fue eliminado.
+        duenios: Lista de dueñxs registrados.
+        usuario_logueado: Nombre del usuario que realiza la acción (para el log).
+    """
     for mascota in mascotas:
         if id_duenio in mascota["dueños"]:
             mascota["dueños"].remove(id_duenio)
@@ -393,10 +424,13 @@ def actualizar_mascotas_por_duenio_eliminado(mascotas, id_duenio, duenios,usuari
             if not mascota["dueños"]:
                 resultado = mascota_sin_duenio(mascota, mascotas, duenios, usuario_logueado)
                 if resultado == "eliminada":
-                    continue  # Saltea esta mascota, ya fue eliminada
+                    continue
 
 
 def mascota_sin_duenio(mascota, mascotas, duenios, usuario_logueado):
+    """
+    Maneja el caso en que una mascota se queda sin dueño tras una eliminación.
+    """
     print(f"\nADVERTENCIA - La mascota '{mascota['nombre']}' se quedó sin dueñx.")
     print("¿Qué desea hacer?")
     print("1: Eliminar la mascota")
@@ -405,9 +439,11 @@ def mascota_sin_duenio(mascota, mascotas, duenios, usuario_logueado):
     while True:
         opcion = input("Seleccione una opción (1 o 2): ").strip()
         if opcion == "1":
+            # Elimina la mascota y registra el evento en el log de auditoría
             eliminar_mascota_por_id(mascotas, mascota["id"], usuario_logueado)
             return "\nMascota eliminada"
         elif opcion == "2":
+            # Agrega un nuevo dueñx y lo asigna a la mascota
             nuevo_duenio = agregar_duenio(duenios, mascotas, usuario_logueado)
             mascota["dueños"].append(nuevo_duenio["id"])
             print(f"Se asignó un nuevo dueñx a '{mascota['nombre']}'.")
@@ -420,18 +456,27 @@ def mascota_sin_duenio(mascota, mascotas, duenios, usuario_logueado):
 --------------------------------------------------------------------------------------------------------
 """
 def registrar_visita(mascotas, usuario_logueado):
+    """
+    Registra una nueva visita médica para una mascota seleccionada por su ID.
+    """
     try:
         while True:
+            # Solicita el ID de la mascota
             id_mascota = input_id_valido("Ingrese el ID de la mascota (0 para ver lista de IDs): ")
             if id_mascota == 0:
+                #Se muestra la lista de mascotas registradas
                 mostrar_ids_mascotas(mascotas)
                 continue
             break  # ID válido distinto de 0
-
+        
+        # Se busca la mascota correspondiente al ID ingresado
         mascota = buscar_por_id(mascotas, id_mascota)
         if mascota:
+            # Crea la nueva visita y la agrega al historial de la mascota
             visita = crear_visita(usuario_logueado)
+            # El método setdefautl asegura de que todas las mascotas tengan un campo historial tipo lista, si no lo tienen lo crea
             mascota.setdefault("historial", []).append(visita)
+            # Guarda los datos actualizados
             guardar_datos_json(ruta_mascotas, mascotas)
             print(f"\n=== Visita registrada exitosamente para {mascota['nombre']}. ===\n")
         else:
@@ -1037,19 +1082,28 @@ def mostrarUltimasDiezVisitas(mascotas):
 
 #Filtros de historial médico de la mascota
 def extraer_campo(fila, campo):
+    """
+    Extrae información de los registros de historial médico de las mascotas
+    """
     return next(
         (item.split(":", 1)[1].strip() for item in fila if item.lower().startswith(campo.lower() + ":")),
         ""
     )
 
 def filtrar_historial_por_motivo(historial):
+    #Extrae los motivos existentes en el historial
     motivos_disponibles = sorted(set(extraer_campo(h, "Motivo") for h in historial))
+    #Imprime los motivos extraídos del historial
     print("Motivos disponibles:", ", ".join(motivos_disponibles))
+    #Se ingresa el motivo a filtrar
     motivo = input("Ingrese motivo exacto: ").strip().title()
+    #Retorna una lista de todas las filas del historial donde coincida el motivo
     return list(filter(lambda h: extraer_campo(h, "Motivo") == motivo, historial))
 
 def filtrar_historial_por_fecha(historial):
+    #Se ingresa la fecha a filtrar
     fecha = input("Ingrese fecha (dd/mm/yyyy): ").strip()
+    #Retorna una lista de todas las filas del historial donde coincida la fecha ingresada
     return list(filter(lambda h: extraer_campo(h, "Fecha") == fecha, historial))
 
 def filtrar_historial_por_empleado(historial):
@@ -1057,6 +1111,36 @@ def filtrar_historial_por_empleado(historial):
     print("Veterinarios disponibles:", ", ".join(nombres_disponibles))
     nombre = input("Ingrese nombre del veterinario: ").strip().title()
     return list(filter(lambda h: extraer_campo(h, "Empleado") == nombre, historial))
+
+def filtrar_historial_por_id_mascota(historial, mascotas):
+    """
+    Filtra el historial médico por el ID de una mascota específica.
+    Si se ingresa 0, se muestra la lista de mascotas registradas.
+    """
+    while True:
+        id_input = input("Ingrese el ID de la mascota (0 para ver lista): ").strip()
+        
+        if id_input == "0":
+            mostrar_ids_mascotas(mascotas)
+            continue
+        
+        if not id_input.isdigit():
+            print("Debe ingresar un número válido.")
+            continue
+
+        id_mascota = int(id_input)
+        historial_filtrado = [
+            registro
+            for mascota in mascotas
+            if mascota["id"] == id_mascota
+            for registro in mascota.get("historial", [])
+        ]
+
+        if not historial_filtrado:
+            print(f"No se encontraron registros para la mascota con ID {id_mascota}.")
+            return []
+
+        return historial_filtrado
 
 def busqueda_en_historial(mascotas):
     historial = [registro for mascota in mascotas for registro in mascota.get("historial", [])]
@@ -1070,10 +1154,11 @@ def busqueda_en_historial(mascotas):
 1: Por fecha
 2: Por motivo
 3: Por nombre de veterinario
+4: Por ID de mascota
 0: Finalizar búsqueda
 """)
 
-    while len(filtros_usados) < 3:
+    while len(filtros_usados) < 4:
         try:
             opcion = int(input("Seleccione una opción de filtro (0 para salir): "))
         except ValueError:
@@ -1092,6 +1177,8 @@ def busqueda_en_historial(mascotas):
             historial = filtrar_historial_por_motivo(historial)
         elif opcion == 3:
             historial = filtrar_historial_por_empleado(historial)
+        elif opcion == 4:
+            historial = filtrar_historial_por_id_mascota(historial, mascotas)
         else:
             print("Opción inválida.")
             continue
