@@ -935,12 +935,7 @@ def mostrarTodasLasMascotas(mascotas, duenios):
         return
     print("\n--- Lista de Todas las Mascotas ---")
     for mascota in mascotas:
-        nombres_duenio = [duenio['nombre'] for duenio in duenios if duenio['id'] in mascota['dueños']]
-        print(f"ID: {mascota['id']}")
-        print(f"Nombre: {mascota['nombre']}")
-        print(f"Tipo: {mascota['tipo']}")
-        print(f"Edad: {mascota['edad']} años")
-        print(f"Dueñx/s: {' - '.join(nombres_duenio)}")
+        muestraDatosMascota(mascota)
         print("----------------------------------")
 
 #Función para mostrar todos los dueños de la lista de diccionarios "duenios"
@@ -953,13 +948,7 @@ def mostrarTodosLosDuenios(mascotas, duenios):
         return
     print("\n--- Lista de Todos los Dueñxs ---")
     for duenio in duenios:
-        mascotas_duenio = [mascota['nombre'] for mascota in mascotas if duenio['id'] in mascota['dueños']]
-        print(f"ID: {duenio['id']}")
-        print(f"Nombre: {duenio['nombre']}")
-        print(f"Teléfono: {duenio['telefono']}")
-        print(f"Mail: {duenio['mail']}")
-        print(f"Mascotas: {' - '.join(mascotas_duenio)}")
-        print("----------------------------------")
+        muestraDatosDuenios(duenio)
 
 
 #Función para buscar las mascotas por nombre (Devuelve todas las coincidencias con ese nombre)
@@ -974,16 +963,9 @@ def buscarMascotaPorNombre(mascotas, duenios):
         print("No se encontraron mascotas con ese nombre.")
         return
     for mascota in mascotas_encontradas:
-        nombres_duenios = [duenio['nombre'] for duenio in duenios if duenio['id'] in mascota['dueños']]
-        print("\n--- Mascota ---")
-        print(f"ID: {mascota['id']}")
-        print(f"Nombre: {mascota['nombre']}")
-        print(f"Tipo: {mascota['tipo']}")
-        print(f"Edad: {mascota['edad']} años")
-        print("Historial Médico:")
+        muestraDatosMascota(mascota)
         for fila in mascota['historial']:
             print(" - ".join(fila))
-        print(f"Dueñx/s: {' - '.join(nombres_duenios)}")
         print("----------------------------------")
 
 #Función para buscar los dueños por nombre (Devuelve todas las coincidencias con ese nombre)
@@ -998,13 +980,7 @@ def buscarDuenioPorNombre(mascotas, duenios):
         print("No se encontraron dueñxs con ese nombre.")
         return
     for duenio in duenios_encontrados:
-        mascotas_duenio = [mascota['nombre'] for mascota in mascotas if duenio['id'] in mascota['dueños']]
-        print("\n--- Dueñx ---")
-        print(f"ID: {duenio['id']}")
-        print(f"Nombre: {duenio['nombre']}")
-        print(f"Teléfono: {duenio['telefono']}")
-        print(f"Mail: {duenio['mail']}")
-        print(f"Mascotas: {' - '.join(mascotas_duenio)}")
+        muestraDatosDuenios(duenio)
         print("----------------------------------")
 
 def MenuHistorialMascota(mascotas):
