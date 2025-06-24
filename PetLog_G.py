@@ -25,9 +25,12 @@ def cargar_datos_json(ruta):
         # Intenta abrir el archivo y leer su contenido como JSON
         with open(ruta, "r", encoding="utf-8") as archivo:
             return json.load(archivo)
-    # En caso de que el archivo no existe o el JSON está mal formado, devuelve una lista vacía    
-    except (FileNotFoundError, json.JSONDecodeError):
+    # En caso de que no encuentre el archivo o no existe, devuelve una lista vacía    
+    except FileNotFoundError:
+        print(f"ERROR - Archivo no encontrado en: {ruta}. Se inicializa una lista vacía.")
         return []
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Archivo JSON inválido en {ruta}: {e}")
 
 def guardar_datos_json(ruta, datos):
     # Abre el archivo
