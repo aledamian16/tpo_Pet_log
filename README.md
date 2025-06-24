@@ -10,4 +10,4 @@ Mascotas:
 
 
 Correcciones:
-    Corregir excepciones en cargar json
+    Corregir excepciones en cargar json (tipos de errores)

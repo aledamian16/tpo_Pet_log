@@ -285,10 +285,11 @@ def validar_nombre(mensaje):
 def input_tipo_mascota(mensaje, tipos):
     # Solicita al usuario ingresar el tipo de mascota valido  (Perro, Gato, Ave, Reptil, Roedor, Pez, Otro)
     while True:
+        print(f"Tipos válidos de mascotas: {', '.join(tipos)}")
         tipo = input(mensaje).strip().title()
         if tipo in tipos:
             return tipo
-        print(f"Tipo inválido. Tipos válidos: {', '.join(tipos)}")
+        print(f"Tipo de mascota inválido.")
 
 """
 --------------------------------------------------------------------------------------------------------
@@ -815,7 +816,7 @@ def editar_tipo_mascota(mascota,tiposMascotas):
         print(f"- {tipo}")
     print("------------------------------------\n")
 
-    tipo = input_tipo_mascota("Nuevo tipo: ", tiposMascotas)
+    tipo = input_tipo_mascota(f"Nuevo tipo ({tiposMascotas}): ", tiposMascotas)
     mascota["tipo"] = tipo
     print("Tipo actualizado correctamente.")
 
