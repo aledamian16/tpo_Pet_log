@@ -475,5 +475,15 @@
                 "Rol: Veterinario"
             ]
         ]
+    },
+    {
+        "id": 5,
+        "nombre": "Pepe",
+        "tipo": "Perro",
+        "edad": 5,
+        "dueños": [
+            1
+        ],
+        "historial": []
     }
 ]
