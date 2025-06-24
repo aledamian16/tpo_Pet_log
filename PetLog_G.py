@@ -1,7 +1,7 @@
 import re
 import json
 from datetime import datetime
-
+from functools import reduce
 """
 --------------------------------------------------------------------------------------------------------
     Rutas de archivos
@@ -685,7 +685,7 @@ def busqueda_de_id(datosUsuarios):
 
 
 #Función para realizar el cambio de ID (Sirve tanto para Mascotas como para Dueñxs)
-def cambio_de_id(individuo, datosUsuarios):
+def cambio_de_id(individuo, datosUsuarios, mascotas):
     ids_existentes = set(map(lambda x: x["id"], datosUsuarios))
 
     while True:
@@ -705,6 +705,10 @@ def cambio_de_id(individuo, datosUsuarios):
             individuo["id"] = nuevo_id
             print("ID actualizado correctamente.")
             return
+
+# Función para actualizar los ids modificados de los dueños en la lista de mascotas
+def actualizar_id_duenios(nuevo_id , mascotas):
+    pass
 
 #Función para realizar el cambio de nombre
 def cambioNombre(individuo):
@@ -780,7 +784,7 @@ def editarDatosMascotas(mascotas, usuario_logueado,tiposMascotas,ruta_mascotas):
 2: Nombre\n
 3: Tipo\n
 4: Edad\n
-0: Finalizar Sesión
+0: Volver al menú de edición
 --------------------------------------""")
         try:
             opcion =int(input("Seleccione opcion: "))
@@ -849,7 +853,7 @@ def editarDatosDuenio(duenios, usuario_logueado, ruta_duenios):
 2: Nombre\n
 3: Teléfono\n
 4: Mail\n
-0: Finalizar Sesión\n
+0: Volver al menú de edición\n
 --------------------------------------""")
         try:
             opcion =int(input("Seleccione opcion: "))
@@ -877,7 +881,6 @@ def editarDatosDuenio(duenios, usuario_logueado, ruta_duenios):
         else:
             print("Opción inválida. Intente nuevamente.")
                                         
-        #mascotasDuenio = [mascota["nombre"] for mascota in mascotas if duenio["id"] in mascota["dueños"]]#utilizamos listas por comprension para mostras nombres de las mascotas
         muestraDatosDuenios(duenio)
 
     guardar_datos_json(ruta_duenios, duenios)
@@ -900,7 +903,8 @@ def consultarInformacion(mascotas, duenios):
 4: Buscar dueño por nombre\n
 5: Ver Historial de mascota\n
 6: Buscar en historial de mascota\n
-7: Volver al menú principal""")
+7: Consultar mascota con más visitas médicas\n
+8: Volver al menú principal""")
 
     while True:
         try:
@@ -919,6 +923,8 @@ def consultarInformacion(mascotas, duenios):
             elif opcionConsulta == 6:
                 busqueda_en_historial(mascotas)
             elif opcionConsulta == 7:
+                mascota_con_mas_visitas(mascotas)
+            elif opcionConsulta == 8:
                 return # Volvemos al menú principal
             else:
                 print("Opción inválida. Intente nuevamente (1 , 2, 3, 4, 5, 6 o 7)")
@@ -1180,6 +1186,16 @@ def busqueda_en_historial(mascotas):
 
     print("\n--- Fin de búsqueda ---")
 
+#Función para imprimir la mascota con más visitas
+def mascota_con_mas_visitas(mascotas):
+    mascota_mas_visitas = calculo_mascota_con_mas_visitas(mascotas)
+    print(f"La mascota con más visitas médicas registradas es: {mascota_mas_visitas["nombre"]} con  {len(mascota_mas_visitas["historial"])} visitas médicas")
+
+#Funcioón para calcular la mascota con más visitas médicas realizadas
+def calculo_mascota_con_mas_visitas(mascotas):
+    mascota_mas_visitas = reduce(lambda a, b: a if len(a["historial"]) > len(b["historial"]) else b, mascotas)
+    return mascota_mas_visitas
+
 """
 --------------------------------------------------------------------------------------------------------
 Funciones de Log In y Sign Up
@@ -1248,7 +1264,7 @@ def crear_usuario(ruta_usuarios, usuarios, roles_validos):
     nuevo_usuario["disponibilidad"] = ingresar_disponibilidad(dias_validos)
     usuarios.append(nuevo_usuario)
     guardar_datos_json(ruta_usuarios, usuarios)
-    print("Usuario creado exitosamente.")
+    print("Usuario creado exitosamente.\n")
     print(json.dumps(nuevo_usuario, indent=4, ensure_ascii=False)) #mostrar nuevo usuario
 
 def buscar_usuario_por_nombre(usuarios):
