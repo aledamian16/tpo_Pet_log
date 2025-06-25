@@ -515,7 +515,7 @@ def menu_agregar(mascotas, duenios, tipos_mascotas,usuario_logueado):
     print("""\n--- Menú Agregar ---
                 1: Agregar dueñx
                 2: Agregar mascota
-                3: Volver al menú principal""")
+                0: Volver al menú principal""")
     
     while True:
         try:
@@ -532,7 +532,7 @@ def menu_agregar(mascotas, duenios, tipos_mascotas,usuario_logueado):
             agregar_mascota(mascotas, duenios, tipos_mascotas,usuario_logueado)
             guardar_datos_json(ruta_duenios, duenios)
             guardar_datos_json(ruta_mascotas, mascotas)
-        elif opcion == 3:
+        elif opcion == 0:
             return # Volver al menú principal
         else:
             print("Opción inválida.")
@@ -757,14 +757,14 @@ def  modificarInformacion(mascotas, duenios, usuario_logueado, tiposMascotas,rut
         print("""\n--- MODIFICAR INFORMACIÓN ---\n
 1: Modificar datos mascotas\n
 2: Modificar datos dueños\n
-3: Volver al menú principal""")
-        opcion = int(input("\nMENÚ MODIFICAR - Ingresar opción deseada: "))
+0: Volver al menú principal""")
+        opcion = int(input("\nMENÚ MODIFICAR - Ingresar opción deseada (0 para volver al menú anterior): "))
 
         if opcion == 1:
             editarDatosMascotas(mascotas, usuario_logueado, tiposMascotas, ruta_mascotas)
         if opcion == 2:
             editarDatosDuenio(duenios, usuario_logueado,ruta_duenios)
-        if opcion == 3:
+        if opcion == 0:
             #volver al menu principal
             return True
 
@@ -792,7 +792,7 @@ def editarDatosMascotas(mascotas, usuario_logueado,tiposMascotas,ruta_mascotas):
 0: Volver al menú de edición
 --------------------------------------""")
         try:
-            opcion =int(input("Seleccione opcion de atributo a editar: "))
+            opcion =int(input("Seleccione opcion de atributo a editar (0 para volver al menú anterior): "))
         except ValueError:
             print("Error - Debe ingresar una opción válida (1, 2, 3, 4 o 0).")
             continue
@@ -861,7 +861,7 @@ def editarDatosDuenio(duenios, usuario_logueado, ruta_duenios):
 0: Volver al menú de edición\n
 --------------------------------------""")
         try:
-            opcion =int(input("Seleccione opcion de atributo a editar: "))
+            opcion =int(input("Seleccione opcion de atributo a editar (0 para volver al menú anterior): "))
         except ValueError:
             print("Error - Debe ingresar una opción válida (1, 2, 3, 4 o 0).")
             continue
@@ -910,11 +910,11 @@ def consultarInformacion(mascotas, duenios):
 5: Ver Historial de mascota\n
 6: Buscar en historial de mascota\n
 7: Consultar mascota con más visitas médicas\n
-8: Volver al menú principal""")
+0: Volver al menú principal""")
 
     while True:
         try:
-            opcionConsulta = int(input("MENÚ CONSULTAS - Seleccione una opción: "))
+            opcionConsulta = int(input("MENÚ CONSULTAS - Seleccione una opción (0 para volver al menú anterior) : "))
 
             if opcionConsulta == 1:
                 mostrarTodasLasMascotas(mascotas, duenios)
@@ -930,10 +930,10 @@ def consultarInformacion(mascotas, duenios):
                 busqueda_en_historial(mascotas)
             elif opcionConsulta == 7:
                 mascota_con_mas_visitas(mascotas)
-            elif opcionConsulta == 8:
+            elif opcionConsulta == 0:
                 return # Volvemos al menú principal
             else:
-                print("Opción inválida. Intente nuevamente (1 , 2, 3, 4, 5, 6 o 7)")
+                print("Opción inválida. Intente nuevamente (1 , 2, 3, 4, 5, 6, 7  o 0 para volver al menú anterior)")
         except ValueError:
             print("Debe ingresar un número")
 
@@ -1004,7 +1004,7 @@ def MenuHistorialMascota(mascotas):
 --- Consultar Historial ---
 1: Ver todo el historial de la mascota
 2: Ver últimas 10 visitas a la veterinaria
-3: Volver al menú principal
+0: Volver al menú principal
 """)
     while True:
         try:
@@ -1013,7 +1013,7 @@ def MenuHistorialMascota(mascotas):
                 mostrarHistorialMascota(mascotas)
             elif opcion == 2:
                 mostrarUltimasDiezVisitas(mascotas)
-            elif opcion == 3:
+            elif opcion == 0:
                 return
             else:
                 print("Opción inválida. Intente nuevamente.")
