@@ -687,6 +687,7 @@ def busqueda_de_id(datosUsuarios):
 #Función para realizar el cambio de ID (Sirve tanto para Mascotas como para Dueñxs)
 def cambio_de_id(individuo, datosUsuarios, mascotas):
     ids_existentes = set(map(lambda x: x["id"], datosUsuarios))
+    id_anterior = individuo["id"]
 
     while True:
         try:
@@ -703,12 +704,16 @@ def cambio_de_id(individuo, datosUsuarios, mascotas):
             print("Ese ID ya está en uso. Intente con otro.")
         else:
             individuo["id"] = nuevo_id
+            if "tipo" not in individuo:
+                for mascota in mascotas:
+                     if id_anterior in mascota["dueños"]:
+                         mascota["dueños"].remove(id_anterior)
+                         mascota["dueños"].append(nuevo_id)
+                     
             print("ID actualizado correctamente.")
             return
 
-# Función para actualizar los ids modificados de los dueños en la lista de mascotas
-def actualizar_id_duenios(nuevo_id , mascotas):
-    pass
+
 
 #Función para realizar el cambio de nombre
 def cambioNombre(individuo):
@@ -749,11 +754,11 @@ def muestraDatosDuenios(duenio):
 #Menú modificar información: Mascota y/o Dueñx
 def  modificarInformacion(mascotas, duenios, usuario_logueado, tiposMascotas,ruta_mascotas, ruta_duenios):
     while True:
-        print("""\n--- Consultar Información ---\n
+        print("""\n--- MODIFICAR INFORMACIÓN ---\n
 1: Modificar datos mascotas\n
 2: Modificar datos dueños\n
 3: Volver al menú principal""")
-        opcion = int(input("\nIngresar opción deseada: "))
+        opcion = int(input("\nMENÚ MODIFICAR - Ingresar opción deseada: "))
 
         if opcion == 1:
             editarDatosMascotas(mascotas, usuario_logueado, tiposMascotas, ruta_mascotas)
@@ -787,7 +792,7 @@ def editarDatosMascotas(mascotas, usuario_logueado,tiposMascotas,ruta_mascotas):
 0: Volver al menú de edición
 --------------------------------------""")
         try:
-            opcion =int(input("Seleccione opcion: "))
+            opcion =int(input("Seleccione opcion de atributo a editar: "))
         except ValueError:
             print("Error - Debe ingresar una opción válida (1, 2, 3, 4 o 0).")
             continue
@@ -856,7 +861,7 @@ def editarDatosDuenio(duenios, usuario_logueado, ruta_duenios):
 0: Volver al menú de edición\n
 --------------------------------------""")
         try:
-            opcion =int(input("Seleccione opcion: "))
+            opcion =int(input("Seleccione opcion de atributo a editar: "))
         except ValueError:
             print("Error - Debe ingresar una opción válida (1, 2, 3, 4 o 0).")
             continue
@@ -866,7 +871,7 @@ def editarDatosDuenio(duenios, usuario_logueado, ruta_duenios):
             break
 
         elif opcion == 1: #para cambiar el id se corrobora que no se encuentre entre los existentes
-            cambio_de_id(duenio, duenios)    
+            cambio_de_id(duenio, duenios, mascotas)    
         
         elif opcion == 2:
             cambioNombre(duenio)
@@ -883,6 +888,7 @@ def editarDatosDuenio(duenios, usuario_logueado, ruta_duenios):
                                         
         muestraDatosDuenios(duenio)
 
+    guardar_datos_json(ruta_mascotas, mascotas)
     guardar_datos_json(ruta_duenios, duenios)
     registrar_log_auditoria(usuario_logueado, f"Modificó datos del dueñx '{duenio['nombre']}' (ID {duenio['id']})")
     return
@@ -908,7 +914,7 @@ def consultarInformacion(mascotas, duenios):
 
     while True:
         try:
-            opcionConsulta = int(input("Menú Consultas - Seleccione una opción: "))
+            opcionConsulta = int(input("MENÚ CONSULTAS - Seleccione una opción: "))
 
             if opcionConsulta == 1:
                 mostrarTodasLasMascotas(mascotas, duenios)
@@ -1002,7 +1008,7 @@ def MenuHistorialMascota(mascotas):
 """)
     while True:
         try:
-            opcion = int(input("Seleccione una opción: "))
+            opcion = int(input("Seleccione una opción para consultar el historial: "))
             if opcion == 1:
                 mostrarHistorialMascota(mascotas)
             elif opcion == 2:
@@ -1201,6 +1207,7 @@ def calculo_mascota_con_mas_visitas(mascotas):
 Funciones de Log In y Sign Up
 --------------------------------------------------------------------------------------------------------
 """
+#Función de log in
 def iniciar_sesion(usuarios):
     print("\n--- Iniciar Sesión ---")
     intentos = 0
@@ -1216,7 +1223,7 @@ def iniciar_sesion(usuarios):
     print("\nAcceso denegado. Excediste el número de intentos.")
     return None
 
-
+#Función para ingresar la disponibilidad del empleado
 def ingresar_disponibilidad(dias_validos):
     print("Ingrese la disponibilidad del usuario (deje el día vacío para terminar).")
     disponibilidad = {}
@@ -1236,6 +1243,7 @@ def ingresar_disponibilidad(dias_validos):
 
     return ordenar_disponibilidad(disponibilidad)
 
+#Función ingresar los horarios por día del empleado
 def pedir_rangos_para_dia(dia, rangos_existentes):
     nuevos_rangos = []
     print(f"Ingrese los horarios para {dia} (ej. 08:00-12:00, 14:00-18:00). Enter para finalizar.")
@@ -1251,7 +1259,7 @@ def pedir_rangos_para_dia(dia, rangos_existentes):
                 print(f"Rango inválido o solapado: {rango}")
     return ordenar_rangos(rangos_existentes + nuevos_rangos)
 
-
+#Función para crear usuario
 def crear_usuario(ruta_usuarios, usuarios, roles_validos):
     print("\n--- Registrar Nuevo Usuario ---")
     nuevo_usuario = {}
@@ -1267,6 +1275,7 @@ def crear_usuario(ruta_usuarios, usuarios, roles_validos):
     print("Usuario creado exitosamente.\n")
     print(json.dumps(nuevo_usuario, indent=4, ensure_ascii=False)) #mostrar nuevo usuario
 
+#Función que buscar usuario por nombre
 def buscar_usuario_por_nombre(usuarios):
     usuario_input = input("Ingrese su nombre de usuario: ").strip()
     for usuario in usuarios:
@@ -1275,6 +1284,7 @@ def buscar_usuario_por_nombre(usuarios):
     print("Usuario no encontrado.")
     return None
 
+#Función para cambiar contraseña
 def cambiar_contrasenia(usuarios, ruta_usuarios):
     usuario = buscar_usuario_por_nombre(usuarios)
 
@@ -1321,7 +1331,7 @@ def menuPrincipal(mascotas, duenios, tiposMascotas, usuario_logueado, ruta_masco
   0: Finalizar Sesión\n""")
 
         try:
-            opcion = int(input("Seleccione una opción: "))
+            opcion = int(input("MENÚ PRINCIPAL - Seleccione una opción: "))
             if opcion == 1:
                 print("Ha seleccionado Consultar Mascota y/o Dueñx")
                 consultarInformacion(mascotas, duenios)
@@ -1359,7 +1369,7 @@ def menu_inicio(mascotas , duenios, usuarios, tiposMascotas, roles_validos, ruta
 
     while True:
         try:
-            opcion = int(input("Seleccione una opción: "))
+            opcion = int(input("MENÚ INICIO - Seleccione una opción: "))
             if opcion == 1:
                 usuario_logueado = iniciar_sesion(usuarios)
                 if usuario_logueado:

@@ -1,3 +1,2 @@
 2025-06-23 21:23:15 - Usuario: am.vet: Agregó una nueva mascota: Pepe - ID: 5
-2025-06-24 19:43:34 - Usuario: mg.vet1: Modificó datos del dueñx 'Jorgito Messi' (ID 8)
-2025-06-24 19:48:07 - Usuario: mg.vet1: Modificó datos de la mascota 'Messi' (ID 1)
+
